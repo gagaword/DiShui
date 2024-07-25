@@ -144,29 +144,65 @@ void Twoarray()
 		agesum = 0;
 	}
 
+	
+	
+}
+
+void arraySort()
+{
 	/*
-		数组一：[3,5,7,9,12,25,34,55]					
-		数组二：[4,7,9,11,13,16]				
-		将两个数组中所有数据进行从小到大的排序，存储到				
-		另一个数组中.				
+		数组一：[3,5,7,9,12,25,34,55]
+		数组二：[4,7,9,11,13,16]
+		将两个数组中所有数据进行从小到大的排序，存储到
+		另一个数组中.
 	*/
 	printf("------------------------------------\n");
 
 	int array1[] = { 3,5,7,9,12,25,34,55 };
 	int array4[] = { 4,7,9,11,13,16 };
 	int array5[20] = { 0 };
-	int m = 0;
-	int j = 0;
-	int s = 0;
-	
 
-	for (int i = 0; i < sizeof(array5)/sizeof(array5[0]); i++)
+	int i = 0, j = 0, k = 0;
+
+	// 合并两个数组
+	while (i < sizeof(array1) / sizeof(array1[0]) && j < sizeof(array4) / sizeof(array4[0])) {
+		if (array1[i] <= array4[j]) {
+			array5[k++] = array1[i++];
+		}
+		else {
+			array5[k++] = array4[j++];
+		}
+	}
+
+	// 处理剩余的数据
+	while (i < sizeof(array1) / sizeof(array1[0])) {
+		array5[k++] = array1[i++];
+	}
+	while (j < sizeof(array4) / sizeof(array4[0])) {
+		array5[k++] = array4[j++];
+	}
+
+
+	/*while (a < sizeof(array1) / sizeof(array1[0]))
+	{
+		array5[a] = array1[a];
+		++a;
+	}
+	printf("a---->%d\n", a);
+
+	while (j < sizeof(array4) / sizeof(array4[0]))
+	{
+		array5[a] = array4[j];
+		++a;
+		++j;
+	}*/
+
+
+	for (int i = 0; i < sizeof(array5) / sizeof(array5[0]); i++)
 	{
 		printf("%d ", array5[i]);
 	}
-	
 }
-
 int main()
 {
 	// 缓冲区溢出
@@ -174,5 +210,9 @@ int main()
 
 	//数组
 	Twoarray();
+
+
+	// 排序
+	arraySort();
 	return 0;
 }
