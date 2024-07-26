@@ -1,0 +1,2 @@
+cd /d "D:\Repos\gagaword\ConsoleApplication1\Project1" &msbuild "Project1.vcxproj" /t:sdvViewer /p:configuration="Debug" /p:platform="Win32" /p:SolutionDir="D:\Repos\gagaword\ConsoleApplication1" 
+exit %errorlevel% 
