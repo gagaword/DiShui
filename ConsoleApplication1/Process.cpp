@@ -6,6 +6,16 @@
 #include<Psapi.h>
 #include <tlhelp32.h>
 
+/*
+******************************
+获取指定程序(PID)的句柄
+dwAccess:程序的权限。
+isHandle:是否继承句柄。
+processPid:进程PID。
+by:GaGa
+date:2024.7.12
+******************************
+*/
 HANDLE getProcessHandle(DWORD dwAccess, BOOL isHandle, DWORD processPid)
 {
 	if (dwAccess == NULL || isHandle == NULL || processPid == NULL)
@@ -22,6 +32,13 @@ HANDLE getProcessHandle(DWORD dwAccess, BOOL isHandle, DWORD processPid)
 	}
 }
 
+/*
+******************************
+遍历所有进程，输出进程名称以及PID
+by:GaGa
+date:2024.7.12
+******************************
+*/
 void getALLProcessName()
 {
     // 定义进程快照的句柄
@@ -48,7 +65,14 @@ void getALLProcessName()
     CloseHandle(hProcessSnap);
 }
 
-// 定义一个函数，接受进程名称，返回匹配进程的PID
+/*
+******************************
+获取指定程序的PID
+processName:进程名称。
+by:GaGa
+date:2024.7.12
+******************************
+*/
 DWORD FindProcessIDByName(const std::wstring& processName)
 {
     // 定义进程快照的句柄
