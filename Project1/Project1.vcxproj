@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="day20_1.cpp" />
+    <ClCompile Include="day21_1.cpp" />
     <ClCompile Include="my_head.cpp" />
   </ItemGroup>
   <ItemGroup>

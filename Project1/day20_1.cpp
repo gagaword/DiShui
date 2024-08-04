@@ -4,7 +4,6 @@
 #define notepadPath "C:\\Users\\GaGa\\Desktop\\eee.exe"
 
 
-
 int main()
 {
 	// 通过类定义打开一个文件
@@ -14,7 +13,6 @@ int main()
 
 	// 获取文件大小
 	long fileSize = GetFileSize(file);
-	
 
 	// 读取文件数据
 	unsigned char* result = (unsigned char*)ReadFileData(fileSize,1,file);
