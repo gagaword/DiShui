@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="day21_1.cpp" />
-    <ClCompile Include="my_head.cpp" />
+    <ClCompile Include="day22.cpp" />
+    <ClCompile Include="day22_Image_File_Buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="my_head.h" />
+    <ClInclude Include="day22.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

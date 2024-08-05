@@ -54,18 +54,21 @@ VOID PrintfSECTION()
 	pIMAGE_FILE = &pIMAGE_NT->FileHeader;
 	// 可选头的偏移量是紧跟在文件头之后的
 	pIMAGE_OPTIONAL = &pIMAGE_NT->OptionalHeader;
-	printf("%p\n", pIMAGE_OPTIONAL);
-
+	
 	// 节表紧跟在可选头之后
 	pSECTION = (PIMAGE_SECTION_HEADER)((BYTE*)pIMAGE_OPTIONAL + pIMAGE_FILE->SizeOfOptionalHeader);
 
 	unsigned char SECTION_NAME[9] = { 0 };
+
+	printf("****************************SECTION.NAME******************************************\n");
 
 	// 遍历节表姓名
 	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++)
 	{
 		// 使用strncpy_s复制节名称并确保以null结尾
 		// _TRUNCATE ((size_t)-1)
+		std::cout << std::hex << &(pSECTION[i].Name) << "  ";
+
 		strncpy_s((char*)SECTION_NAME, sizeof(SECTION_NAME), (const char*)pSECTION[i].Name, _TRUNCATE);
 		std::cout << SECTION_NAME << std::endl;
 		//printf("Section Name: %s\n", SECTION_NAME);
@@ -76,6 +79,7 @@ VOID PrintfSECTION()
 	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++) {
 		// 通过联合体访问Misc字段
 		// Misc是一个联合体，可以通过不同的成员来访问信息
+		std::cout << std::hex << &(pSECTION[i].Misc.VirtualSize) << "  ";
 		printf("%08x\n", pSECTION[i].Misc.VirtualSize);
 
 		//std::cout << "Misc: " << std::hex <<  pSECTION[i].Misc.VirtualSize << std::endl;
@@ -86,6 +90,8 @@ VOID PrintfSECTION()
 	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++) {
 		// 通过联合体访问Misc字段
 		// Misc是一个联合体，可以通过不同的成员来访问信息
+		std::cout << std::hex << &(pSECTION[i].SizeOfRawData) << "  ";
+
 		printf("%08x\n", pSECTION[i].SizeOfRawData);
 		//std::cout << "SizeOfRawData: " << std::hex << pSECTION[i].SizeOfRawData << std::endl;
 	}
@@ -95,6 +101,8 @@ VOID PrintfSECTION()
 	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++) {
 		// 通过联合体访问Misc字段
 		// Misc是一个联合体，可以通过不同的成员来访问信息
+		std::cout << std::hex << &(pSECTION[i].PointerToRawData) << "  ";
+
 		printf("%08x\n", pSECTION[i].PointerToRawData);
 		//std::cout << "PointerToRawData: " << std::hex << pSECTION[i].PointerToRawData << std::endl;
 	}
@@ -104,15 +112,27 @@ VOID PrintfSECTION()
 	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++) {
 		// 通过联合体访问Misc字段
 		// Misc是一个联合体，可以通过不同的成员来访问信息
+		std::cout << std::hex << &(pSECTION[i].Characteristics) << "  ";
 		std::cout << std::hex << pSECTION[i].Characteristics << std::endl;
 	}
 	// 首节表+IMAGE_SIZEOF_SECTION_HEADER就是下一个节表
 	/*pSECTION = (PIMAGE_SECTION_HEADER)((BYTE*)pSECTION + IMAGE_SIZEOF_SECTION_HEADER);
 	printf("%s\n", pSECTION->Name);*/
 
+	printf("*******************************VisuaiAddress****************************************\n");
+
+	// 打印在内存中的偏移
+	for (int i = 0; i < pIMAGE_FILE->NumberOfSections; i++) {
+		// 通过联合体访问Misc字段
+		// Misc是一个联合体，可以通过不同的成员来访问信息
+		std::cout << std::hex << &(pSECTION[i].VirtualAddress) << "  ";
+		std::cout << std::hex << pSECTION[i].VirtualAddress << std::endl;
+	}
 }
+
 int main()
 {
 	PrintfSECTION();
+
 	return 0;
 }
