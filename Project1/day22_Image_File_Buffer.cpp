@@ -1,6 +1,7 @@
 #include"day22.h"
 
-#define FILEPATH "C:\\Users\\GaGa\\Desktop\\A.exe"
+#define FILEPATH "D:\\PE\\PETool 1.0.0.5.exe"
+
 int main()
 {
     LPVOID FileBuffer = NULL;
@@ -34,7 +35,7 @@ int main()
 
     std::cout << "NewBuffer复制字节数: " << newBufferSize << std::endl;
 
-    DWORD writeResult = MemeryTOFile(NewBuffer, newBufferSize, (LPSTR)"C:\\Users\\GaGa\\Desktop\\new.exe");
+    DWORD writeResult = MemeryTOFile(NewBuffer, newBufferSize, (LPSTR)"C:\\Users\\GaGa\\Desktop\\SSSSS_new.exe");
     if (writeResult == 0) {
         std::cerr << "写入文件失败" << std::endl;
         free(FileBuffer);

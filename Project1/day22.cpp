@@ -204,7 +204,6 @@ DWORD CopyFileBufferToImageBuffer(IN LPVOID FileBuffer, OUT LPVOID* ImageBuffer)
 
 		memcpy(dest, src, pSECTION[i].SizeOfRawData);
 		CopyData += pSECTION[i].SizeOfRawData;
-
 	}
 
 	return CopyData;

@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="day22_Image_File_Buffer.cpp">
+    <ClCompile Include="day23.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="day22.cpp">
+    <ClCompile Include="My_day23.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="day22.h">
+    <ClInclude Include="My_day23.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
