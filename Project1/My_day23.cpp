@@ -69,7 +69,11 @@ DWORD AddShellCode(LPVOID fileBuffer)
 
 	// ÐÞ¸ÄCharacteristics×Ö¶Î
 	pNT_HEADER->FileHeader.Characteristics |= IMAGE_FILE_RELOCS_STRIPPED;
+
+	void* pmessage = &MessageBoxA;
+	std::cout << pmessage << std::endl;
 	
+	// »ñÈ¡.text×Ö¶Î
 	for (int i = 0; i < NumberSections; i++)
 	{
 		//printf("%s\n", pSECTION_HEADER[i].Name);
@@ -147,7 +151,7 @@ DWORD AddShellCode(LPVOID fileBuffer)
 	
 
 	// ´òÓ¡²åÈëºóµÄFileBuffer
-	std::cout << "*****************************************S²åÈëÓ²±àÂë*****************************************" << std::endl;
+	std::cout << "*******************************************S²åÈëÓ²±àÂë*****************************************" << std::endl;
 	for (size_t i = 0; i < ShellLength; i++)
 	{
 		printf("%02X ", *(((BYTE*)fileBuffer + (FileOffset + MiscSize)) + i));

@@ -162,6 +162,12 @@ DWORD ReadFile(IN const char* FilePath, OUT LPVOID* FileData)
 // 经过GPT优化
 DWORD CopyFileBufferToImageBuffer(IN LPVOID FileBuffer, OUT LPVOID* ImageBuffer)
 {
+
+	if (FileBuffer == NULL)
+	{
+		return 0;
+	}
+	
 	// 解析 FileBuffer PE 字段
 	PIMAGE_DOS_HEADER pDOS = (PIMAGE_DOS_HEADER)FileBuffer;
 	if (pDOS->e_magic != IMAGE_DOS_SIGNATURE) {

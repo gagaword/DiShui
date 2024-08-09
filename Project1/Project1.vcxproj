@@ -19,11 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="day23.cpp" />
-    <ClCompile Include="My_day23.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="My_day23.h" />
+    <ClCompile Include="day24.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
