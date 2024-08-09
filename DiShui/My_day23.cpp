@@ -88,6 +88,7 @@ DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
 // 插入ShellCode
 DWORD AddShellCode(IN LPVOID filePath)
 {
+	
 	std::cout << "MessageBoxExA_Address---->" << MessageBoxA_address << std::endl;
 
 	if (filePath == NULL)
@@ -129,6 +130,7 @@ DWORD AddShellCode(IN LPVOID filePath)
 			break;
 		}
 	}
+
 	if (FileOffset == 0)
 	{
 		std::cerr << "未找到.text" << std::endl;
@@ -143,6 +145,8 @@ DWORD AddShellCode(IN LPVOID filePath)
 	std::cout << "MemeryOffset---->" << std::hex << MemeryOffset << std::endl;
 	std::cout << "MiscSize---->" << std::hex << MiscSize << std::endl;
 
+	std::cout << "Test————————————" << std::hex << peheader.sectionHeader[0].PointerToRawData - peheader.optionalHeader->SizeOfHeaders << std::endl;
+
 	// 修改随机基地址
 	peheader.ntHeaders->FileHeader.Characteristics |= IMAGE_FILE_RELOCS_STRIPPED;
 	std::cerr << "固定基地址修改完成" << std::endl;
@@ -150,7 +154,6 @@ DWORD AddShellCode(IN LPVOID filePath)
 	// OEP地址
 	DWORD EntryPoin = peheader.optionalHeader->AddressOfEntryPoint + peheader.optionalHeader->ImageBase;
 	
-
 	// 计算 E8 跳转地址和 E9 跳转地址
 	DWORD E8FileOffset = ((FileOffset + MiscSize) + 0x8) + 0x5;
 	DWORD E9FileOffset = E8FileOffset + 0x5;

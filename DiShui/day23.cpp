@@ -2,7 +2,7 @@
 #include<Windows.h>
 #include"My_day23.h"
 
-#define FilePath "D:\\PE\\Exeinfo.exe"
+#define FilePath "C:\\Users\\GaGa\\Desktop\\PETool 1.0.0.5.exe"
 
 int main()
 {
@@ -10,7 +10,7 @@ int main()
 	DWORD readFileSize = ReadFile(FilePath, &FileBuffer);
 	free((void*)FileBuffer);*/
 
-	//DWORD AddResult = AddShellCode((LPVOID)FilePath);
+	DWORD AddResult = AddShellCode((LPVOID)FilePath);
 	
 	//bool result = AddShellCodeInData((LPVOID)FilePath); 
 
