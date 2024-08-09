@@ -81,7 +81,6 @@ DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
 	return freadResult;
 }
 
-
 // 插入ShellCode
 DWORD AddShellCode(IN LPVOID filePath)
 {
@@ -142,7 +141,7 @@ DWORD AddShellCode(IN LPVOID filePath)
 	DWORD EntryPoin = peheader.optionalHeader->AddressOfEntryPoint + peheader.optionalHeader->ImageBase;
 	
 	// 硬编码
-	char ShellCode[] = { 0x6A, 0x00, 0x6A, 0x00, 0x6A, 0x00, 0x6A, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0xE9, 0x00, 0x00, 0x00, 0x00 };
+	BYTE ShellCode[] = { 0x6A, 0x00, 0x6A, 0x00, 0x6A, 0x00, 0x6A, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0xE9, 0x00, 0x00, 0x00, 0x00 };
 	int ShellLength = sizeof(ShellCode) / sizeof(ShellCode[0]);
 
 	// 计算 E8 跳转地址和 E9 跳转地址
@@ -155,20 +154,10 @@ DWORD AddShellCode(IN LPVOID filePath)
 	std::cout << "EntryPoin------->" << std::hex << EntryPoin << std::endl;
 	printf("E8CALL----> %X \nE9JMP-----> %X\n", E8CALL, E9JMP);
 	
-
-	// 将E8CALL的每个字节逐个添加到ShellCode的末尾
-	ShellCode[9] = (E8CALL >> 0) & 0xFF; 
-	ShellCode[10] = (E8CALL >> 8) & 0xFF;
-	ShellCode[11] = (E8CALL >> 16) & 0xFF;
-	ShellCode[12] = (E8CALL >> 24) & 0xFF;
+	// 修正ShellCode
+	*(PDWORD)(ShellCode + 9) = E8CALL;
+	*(PDWORD)(ShellCode + 0xE) = E9JMP;
 	
-	// 将E9JMp的每个字节逐个添加到ShellCode的末尾
-	ShellCode[14] = (E9JMP >> 0) & 0xFF; 
-	ShellCode[15] = (E9JMP >> 8) & 0xFF; 
-	ShellCode[16] = (E9JMP >> 16) & 0xFF;
-	ShellCode[17] = (E9JMP >> 24) & 0xFF;
-
-
 	// 确定 ShellCode 插入位置
 	BYTE* address = ((BYTE*)fileBuffer + (FileOffset + MiscSize));
 	// 插入ShellCode。
