@@ -2,23 +2,19 @@
 #include<Windows.h>
 #include"My_day23.h"
 
-#define FilePath "C:\\Users\\GaGa\\Desktop\\InstDrv.exe"
+#define FilePath "D:\\PE\\Exeinfo.exe"
 
 int main()
 {
 	/*LPVOID FileBuffer = NULL;
-
 	DWORD readFileSize = ReadFile(FilePath, &FileBuffer);
-	if (readFileSize == 0)
-	{
-		return 0;
-	}*/
+	free((void*)FileBuffer);*/
 
-	DWORD AddResult = AddShellCode((LPVOID)FilePath);
-	if (AddResult == 0)
-	{
-		return 0;
-	}
+	//DWORD AddResult = AddShellCode((LPVOID)FilePath);
+	
+	//bool result = AddShellCodeInData((LPVOID)FilePath); 
+
+	//bool rdata = AddShellCodeRdata((LPVOID)FilePath);
 
 	return 0;
 }
