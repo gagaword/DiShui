@@ -13,10 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\PE">
+      <UniqueIdentifier>{f20da30f-0997-4e13-be31-c18be1b76267}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="day24.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="day23.cpp">
+      <Filter>源文件\PE</Filter>
     </ClCompile>
+    <ClCompile Include="My_day23.cpp">
+      <Filter>源文件\PE</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="My_day23.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,6 +7,6 @@
 
 DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer);
 
-DWORD AddShellCode(LPVOID fileBuffer);
+DWORD AddShellCode(IN LPVOID filePath);
 
-DWORD FwritrFile(LPVOID buffer, size_t size, const char* filePath);
+DWORD FwritrFile(IN LPVOID buffer, IN size_t size, OUT const char* filePath);

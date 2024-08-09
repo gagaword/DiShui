@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.35026.282
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{9C192481-57B3-4CDB-A587-DE5D190DD0D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Project1.vcxproj", "{8EE50E4A-9567-4422-BC98-A89A7B0A0A1F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiShui", "DiShui\Project1.vcxproj", "{8EE50E4A-9567-4422-BC98-A89A7B0A0A1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
