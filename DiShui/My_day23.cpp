@@ -1,5 +1,9 @@
 #include "My_day23.h"
 
+#define AddByte 0x1000
+#define align_1000(VALUE) VALUE = ((VALUE + 0xFFF) / 0x1000) * 0x1000
+
+
 // MessageBoxA地址
 void* MessageBoxA_address = &MessageBoxA;
 
@@ -62,7 +66,7 @@ DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
 	long fileSize = ftell(file);
 	fseek(file,0,SEEK_SET);
 
-	std::cout << "文件字节:" << fileSize << std::endl;
+	printf("文件字节------> %X \n", fileSize);
 
 	// 分配空间大小
 	*fileBuffer = malloc(fileSize);
@@ -81,7 +85,7 @@ DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
 		std::cout << "读取文件错误" << std::endl;
 		return 0;
 	}
-	std::cout << "读取字节:" << freadResult << std::endl;
+	printf("读取字节------> %X \n", freadResult);
 	return freadResult;
 }
 
@@ -99,10 +103,8 @@ DWORD AddShellCode(IN LPVOID filePath)
 	// 读取文件
 	LPVOID fileBuffer = NULL;
 	DWORD ReadFileResult = ReadFile((char*)filePath, &fileBuffer);
-	if (ReadFileResult == 0)
-	{
-		return 0;
-	}
+	if (ReadFileResult == 0) return 0;
+	
 	
 	// 获取PE信息
 	PEHeaders peheader;
@@ -145,8 +147,6 @@ DWORD AddShellCode(IN LPVOID filePath)
 	std::cout << "MemeryOffset---->" << std::hex << MemeryOffset << std::endl;
 	std::cout << "MiscSize---->" << std::hex << MiscSize << std::endl;
 
-	std::cout << "Test————————————" << std::hex << peheader.sectionHeader[0].PointerToRawData - peheader.optionalHeader->SizeOfHeaders << std::endl;
-
 	// 修改随机基地址
 	peheader.ntHeaders->FileHeader.Characteristics |= IMAGE_FILE_RELOCS_STRIPPED;
 	std::cerr << "固定基地址修改完成" << std::endl;
@@ -170,6 +170,7 @@ DWORD AddShellCode(IN LPVOID filePath)
 	
 	// 确定 ShellCode 插入位置
 	BYTE* address = ((BYTE*)fileBuffer + (FileOffset + MiscSize));
+	printf("ShellCode插入位置-------->%p\n", address);
 	// 插入ShellCode。
 	for (int i = 0; i < ShellLength; i++)
 	{
@@ -420,6 +421,191 @@ bool AddShellCodeRdata(IN LPVOID filePath)
 		return 1;
 	}
 
+	return true;
+}
+
+// 新增一个节
+bool AddSection(IN LPBYTE filePath)
+{
+	if (filePath == nullptr)
+	{
+		std::cerr << "Error: 参数错误" << std::endl;
+		return false;
+	}
+	
+	LPVOID fileBuffer = NULL;
+	errno_t ReadFileResult = ReadFile((char*)filePath, &fileBuffer);
+	if (ReadFileResult == 0) 
+	{
+		std::cerr << "Error: 读取文件失败" << std::endl;
+		return false;
+	}
+
+	//for (size_t i = 0; i < 0x20; i++) printf("%X ", *((BYTE*)fileBuffer + i));
+	
+	// 获取PE信息
+	PEHeaders peheaders;
+	bool PeResult = GetPEHeaders(fileBuffer, peheaders);
+	if (PeResult == 0)
+	{
+		std::cerr << "Error: 获取PE头信息失败" << std::endl;
+		return false;
+	}
+
+	// 修改随机基地址
+	peheaders.ntHeaders->FileHeader.Characteristics |= IMAGE_FILE_RELOCS_STRIPPED;
+	std::cerr << "固定基地址修改完成" << std::endl;
+	
+	// 文件大小，文件尾插入数据
+	size_t fileSize = peheaders.optionalHeader->SizeOfHeaders;
+	size_t NumberSection = peheaders.fileHeader->NumberOfSections;
+	size_t FileOffset = 0, MemeryOffset = 0, MiscSize = 0;
+	DWORD SizeRawData = 0;
+
+	for (size_t i = 0; i < NumberSection; i++)
+	{
+		fileSize += peheaders.sectionHeader[i].SizeOfRawData;
+		if (i == NumberSection - 1)
+		{
+			FileOffset = peheaders.sectionHeader[i].PointerToRawData;
+			MemeryOffset = peheaders.sectionHeader[i].VirtualAddress;
+			MiscSize = peheaders.sectionHeader[i].Misc.VirtualSize;
+			SizeRawData = peheaders.sectionHeader[i].SizeOfRawData;
+			std::cout << "Name---->" << peheaders.sectionHeader[i].Name << std::endl;
+		}
+	}
+	
+	printf("文件原始大小------> %X \n", fileSize);
+	if (fileSize < ReadFileResult)
+	{
+		std::cerr << "文件尾部有未知数据，为了你的文件安全不在新增节" << std::endl;
+		return 0;
+	}
+
+	// 填充信息
+	unsigned char hexData[40] = {
+		0x2E, 0x74, 0x65, 0x78, 0x74, 0x00, 0x00, 0x00,  0x9A, 0xBA, 0x01, 0x00,  0x00, 0x10, 0x00, 0x00,
+		0x00, 0xC0, 0x01, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x60
+	};
+
+	unsigned char Name[] = { 0x47,0x61, 0x47,0x61 };
+
+	// 重新分配内存以包含追加的字节
+	size_t newSize = fileSize + AddByte;
+	printf("文件最新大小------> %X \n", newSize);
+
+	unsigned char* newBuffer = (unsigned char*)realloc(fileBuffer, newSize);
+	if (!newBuffer) {
+		perror("内存分配错误");
+		return false;
+	}
+	memset(newBuffer + fileSize, 0, AddByte);
+
+	// 更新PE信息;
+	PEHeaders newPeHeaders;
+	if (!GetPEHeaders(newBuffer, newPeHeaders)) {
+		std::cerr << "Error: 更新PE头信息失败" << std::endl;
+		free(newBuffer);
+		return false;
+	}
+
+	size_t newFileOffset = 0, newMemeryOffset = 0, newMiscSize = 0;
+	DWORD newSizeRawData = 0;
+
+	size_t newNumberSeciton = newPeHeaders.fileHeader->NumberOfSections;
+	for (size_t i = 0; i < newNumberSeciton; i++)
+	{
+		if (i == newNumberSeciton - 1)
+		{
+			newFileOffset = newPeHeaders.sectionHeader[i].PointerToRawData;
+			newMemeryOffset = newPeHeaders.sectionHeader[i].VirtualAddress;
+			newMiscSize = newPeHeaders.sectionHeader[i].Misc.VirtualSize;
+			newSizeRawData = newPeHeaders.sectionHeader[i].SizeOfRawData;
+		}
+	}
+
+	std::cout << "newFileOffset----> " << std::hex << newFileOffset << std::endl;
+	std::cout << "newMemeryOffset----> " << std::hex << newMemeryOffset << std::endl;
+	std::cout << "newMiscSize-------> " << std::hex << newMiscSize << std::endl;
+	std::cout << "newSizeRawData-------> " << std::hex << newSizeRawData << std::endl;
+
+	// 新增节表
+	// 确定位置
+	DWORD addByte = AddByte;
+	
+	// 计算内存偏移和文件偏移
+	DWORD VirtualAddress = newMiscSize + newMemeryOffset;
+	if (VirtualAddress % (newPeHeaders.optionalHeader->SectionAlignment) != 0) align_1000(VirtualAddress);
+	std::cout << "NewSection----> VirtualAddress----> " << std::hex << VirtualAddress << std::endl;
+	DWORD PointerToRawData = newFileOffset + newSizeRawData;
+	std::cout << "NewSection----> PointerToRawData--> " << std::hex << PointerToRawData << std::endl;
+
+	
+	// 修正hexData
+	memcpy_s(&hexData[1], sizeof(Name), Name, sizeof(Name));
+	memcpy_s(&hexData[8], sizeof(addByte), &addByte, sizeof(addByte));
+	memcpy_s(&hexData[12], sizeof(VirtualAddress), &VirtualAddress, sizeof(VirtualAddress));
+	memcpy_s(&hexData[16],sizeof(addByte), &addByte,sizeof(addByte));
+	memcpy_s(&hexData[20],sizeof(PointerToRawData), &PointerToRawData, sizeof(PointerToRawData));
+
+	printf("********************************节表信息*********************************\n");
+	for (int i = 0; i < 0x28; i++)
+	{
+		printf("%02X ", hexData[i]);
+	}
+	printf("\n");
+
+	// 插入节表
+	DWORD address = (newPeHeaders.dosHeader->e_lfanew + 0x04 + IMAGE_SIZEOF_FILE_HEADER + newPeHeaders.fileHeader->SizeOfOptionalHeader + newPeHeaders.fileHeader->NumberOfSections * 0x28);
+	std::cout << "新增节表偏移--------> " << address << std::endl;
+	BYTE* sectionAddres = (BYTE*)newBuffer + address;
+	std::cout << "新增节表位置--------> " << (void*)sectionAddres << std::endl;
+
+	// 数据插入
+	for (size_t i = 0; i < 0x28; i++)
+	{
+		sectionAddres[i] = hexData[i];
+	}
+
+	// 修改PE信息
+	newPeHeaders.fileHeader->NumberOfSections += 0x1;
+	newPeHeaders.optionalHeader->SizeOfImage += 0x1000;
+
+	// OEP地址
+	DWORD EntryPoin = newPeHeaders.optionalHeader->AddressOfEntryPoint + newPeHeaders.optionalHeader->ImageBase;
+
+	// 计算 E8 跳转地址和 E9 跳转地址
+	DWORD E8FileOffset = (PointerToRawData + 0x8) + 0x5;
+	DWORD E9FileOffset = E8FileOffset + 0x5;
+	DWORD E8CALL = (DWORD_PTR)MessageBoxA_address - ((((E8FileOffset - PointerToRawData) + VirtualAddress)) + newPeHeaders.optionalHeader->ImageBase);
+	DWORD E9JMP = EntryPoin - ((((E9FileOffset - PointerToRawData) + VirtualAddress)) + newPeHeaders.optionalHeader->ImageBase);
+	std::cout << "E8FileOffset----> " << std::hex << E8FileOffset << std::endl;
+	std::cout << "E9FileOffset----> " << std::hex << E9FileOffset << std::endl;
+	std::cout << "EntryPoin-------> " << std::hex << EntryPoin << std::endl;
+	printf("E8CALL----> %X \nE9JMP-----> %X\n", E8CALL, E9JMP);
+
+	// 修正ShellCode
+	*(PDWORD)(ShellCode + 9) = E8CALL;
+	*(PDWORD)(ShellCode + 0xE) = E9JMP;
+
+	// 确定 ShellCode 插入位置
+	BYTE* Newaddress = ((BYTE*)newBuffer + fileSize);
+	// 插入ShellCode。
+	for (int i = 0; i < ShellLength; i++)
+	{
+		Newaddress[i] = ShellCode[i];
+	}
+
+	// 修正OEP
+	std::cerr << "fileSize--------> " << fileSize << std::endl;
+	DWORD newOEP = (fileSize - PointerToRawData) + VirtualAddress;
+	std::cout << "newOEP-----> " << std::hex << newOEP << std::endl;
+	newPeHeaders.optionalHeader->AddressOfEntryPoint = newOEP;
+
+	// 存盘
+	FwritrFile(newBuffer, newSize, (char*)filePath);
+	free(newBuffer);
 	return true;
 }
 
