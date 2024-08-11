@@ -2,9 +2,11 @@
 #include<Windows.h>
 #include"My_day23.h"
 
-#define FilePath "D:\\PE\\Exeinfo.exe"
+#define FilePath "D:\\DriveLoading\\KmdManager.exe"
+
 int main()
 {
+	
 	/*LPVOID FileBuffer = NULL;
 	DWORD readFileSize = ReadFile(FilePath, &FileBuffer);
 	free((void*)FileBuffer);*/
@@ -15,7 +17,13 @@ int main()
 
 	//bool rdata = AddShellCodeRdata((LPVOID)FilePath);
 
-	bool addSection = AddSection((LPBYTE)FilePath);
+	//bool addSection = AddSection((LPBYTE)FilePath);
 
+	//bool expandSection = ExpandSection((LPBYTE)FilePath);
+
+	  ImageData((LPBYTE)FilePath);
+	
 	return 0;
 }
+
+
