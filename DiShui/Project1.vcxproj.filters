@@ -24,9 +24,24 @@
     <ClCompile Include="My_day23.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
+    <ClCompile Include="day22.cpp">
+      <Filter>源文件\PE</Filter>
+    </ClCompile>
+    <ClCompile Include="my_head.cpp">
+      <Filter>源文件\PE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="My_day23.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="day22.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="my_head.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\framework.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

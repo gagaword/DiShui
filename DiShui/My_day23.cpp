@@ -1,4 +1,5 @@
 #include "My_day23.h"
+#include "day22.h"
 
 #define AddByte 0x1000
 #define DEBUG 1
@@ -45,7 +46,7 @@ bool GetPEHeaders(LPVOID fileBuffer, PEHeaders& headers) {
 }
 
 // 读取文件
-DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
+DWORD ReadFile(IN LPCSTR filepath, OUT LPVOID* fileBuffer)
 {
 	if (filepath == NULL)
 	{
@@ -91,7 +92,7 @@ DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer)
 }
 
 // 插入ShellCode
-DWORD AddShellCode(IN LPVOID filePath)
+DWORD AddShellCode(IN LPCSTR filePath)
 {
 	
 	std::cout << "MessageBoxExA_Address---->" << MessageBoxA_address << std::endl;
@@ -201,7 +202,7 @@ DWORD AddShellCode(IN LPVOID filePath)
 }
 
 // 在data节添加ShellCode
-bool AddShellCodeInData(IN LPVOID filePath)
+bool AddShellCodeInData(IN LPCSTR filePath)
 {
 	std::cout << "MessageBoxExA_Address---->" << MessageBoxA_address << std::endl;
 
@@ -314,13 +315,13 @@ bool AddShellCodeInData(IN LPVOID filePath)
 }
 
 // 添加ShellCode到Rdata节
-bool AddShellCodeRdata(IN LPVOID filePath)
+bool AddShellCodeRdata(IN LPCSTR filePath)
 {
 	std::cout << "MessageBoxExA_Address---->" << MessageBoxA_address << std::endl;
 
 	if (filePath == NULL)
 	{
-		return 0;
+		return false;
 	}
 
 	// 读取文件
@@ -328,7 +329,7 @@ bool AddShellCodeRdata(IN LPVOID filePath)
 	DWORD ReadFileResult = ReadFile((char*)filePath, &fileBuffer);
 	if (ReadFileResult == 0)
 	{
-		return 0;
+		return false;
 	}
 
 	// 获取PE信息
@@ -419,14 +420,14 @@ bool AddShellCodeRdata(IN LPVOID filePath)
 	if (writeResult != 0)
 	{
 		std::cout << "存盘成功" << std::endl;
-		return 1;
+		return true;
 	}
 
 	return true;
 }
 
 // 新增一个节
-bool AddSection(IN LPBYTE filePath)
+bool AddSection(IN LPCSTR filePath)
 {
 	if (filePath == nullptr)
 	{
@@ -623,13 +624,8 @@ bool AddSection(IN LPBYTE filePath)
 	return true;
 }
 
-
-/*!
- * @brief 扩大最后一个节并添加ShellCode
- * @param filePath 文件路径
- * @return 0表示失败，否则反非零
-*/
-bool ExpandSection(IN LPBYTE filePath)
+// 扩展节
+bool ExpandSection(IN LPCSTR filePath)
 {
 	if (filePath == NULL)
 	{
@@ -651,7 +647,7 @@ bool ExpandSection(IN LPBYTE filePath)
 	if (!GetPEHeaders(fileBufer,peheader))
 	{
 		perror("PE Info Error");
-		return 0;
+		return false;
 	}
 
 	// 固定基地址
@@ -699,6 +695,7 @@ bool ExpandSection(IN LPBYTE filePath)
 	// 节尾
 	DWORD EndSectionAddress = FileOffset + sizeData;
 	if(DEBUG) std::cout << "EndSectionAddress---->" << EndSectionAddress << std::endl;
+
 	// 扩展0x200字节
 	DWORD newBufferSize = readFileReuslt + 0x200;
 	unsigned char* newBuffer = (unsigned char*)realloc(fileBufer, newBufferSize);
@@ -795,12 +792,8 @@ bool ExpandSection(IN LPBYTE filePath)
 	return true;
 }
 
-/*!
- * @brief 打印数据目录
- * @param filePath 文件路径
- * @return 0表示失败，1表示成功
-*/
-bool ImageData(IN LPBYTE filePath)
+// 打印数据目录
+bool ImageData(IN LPCSTR filePath)
 {
 	if (filePath == NULL)
 	{
@@ -833,23 +826,39 @@ bool ImageData(IN LPBYTE filePath)
 	return true;
 }
 
-/*!
- * @brief 合并节
- * @param filePath  文件路径
- * @return 0成功，1失败
-*/
-bool MergeSection(IN LPBYTE filePath)
+// 合并节
+bool MergeSection(IN LPCSTR filePath)
 {
-	if (filePath == NULL)
-	{
-		return false;
-	}
+	if (filePath == NULL)	return false;
 
+	LPVOID fileBuffer = nullptr;
+	if (!ReadFile((char*)filePath, &fileBuffer))	return false;
+
+	LPVOID ImageBuffer = nullptr;
+	if (!CopyFileBufferToImageBuffer(fileBuffer, &ImageBuffer))	return false;
+
+	PEHeaders peheader;
+	if (!GetPEHeaders(ImageBuffer, peheader))	return false;
+	
+	DWORD VS = peheader.optionalHeader->SizeOfImage - peheader.sectionHeader->VirtualAddress;
+	//DWORD S = peheader.optionalHeader->SizeOfImage - peheader.optionalHeader->SizeOfHeaders;
+	//std::cout << "VS " << VS  << std::endl;
+	DWORD SR = VS;
+
+	peheader.sectionHeader->Misc.VirtualSize = VS;
+	peheader.sectionHeader->SizeOfRawData = SR;
+	peheader.sectionHeader->Characteristics |= 0xFFFFFFFF;
+	peheader.fileHeader->NumberOfSections = 0x1;
+
+	LPVOID newBuffer = NULL;
+	if (!CopyImageBufferToNewBuffer(ImageBuffer, &newBuffer))	return false;
+
+	FwritrFile(newBuffer, VS + peheader.optionalHeader->SizeOfHeaders, (char*)filePath);
 	return true;
 }
 
-// 路径新名称
-const char* newFilePathName(const char* filepath)
+// 文件新路径
+LPCSTR newFilePathName(LPCSTR filepath)
 {
 	if (filepath == NULL)
 	{
@@ -870,8 +879,8 @@ const char* newFilePathName(const char* filepath)
 	return newFilePath;
 }
 
-// 写入硬盘
-DWORD FwritrFile(IN LPVOID buffer, IN size_t size, OUT const char* filePath)
+// 写入文件
+DWORD FwritrFile(IN LPVOID buffer, IN size_t size, OUT LPCSTR filePath)
 {
 	const char* newFilePath = newFilePathName(filePath);
 

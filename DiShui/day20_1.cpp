@@ -3,7 +3,6 @@
 
 #define notepadPath "C:\\Users\\GaGa\\Desktop\\eee.exe"
 
-
 int main()
 {
 	// 通过类定义打开一个文件

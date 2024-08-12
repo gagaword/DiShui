@@ -1,7 +1,7 @@
 #include<iostream>
 #include<Windows.h>
 #include<string.h>
-#include "my_head.h"
+#include "day21_1.h"
 
 #define FilePath "C:\\Users\\GaGa\\Desktop\\A.exe"
 #define VOID void

@@ -4,37 +4,68 @@
 #include<iostream>
 #include<string.h>
 
-
-DWORD ReadFile(IN const char* filepath, OUT LPVOID* fileBuffer);
-
-DWORD AddShellCode(IN LPVOID filePath);
-
-DWORD FwritrFile(IN LPVOID buffer, IN size_t size, OUT const char* filePath);
-
-
-bool AddShellCodeInData(IN LPVOID filePath);
-
-bool AddShellCodeRdata(IN LPVOID filePath);
-
-bool AddSection(IN LPBYTE filePath);
+/*!
+ * @brief 该方法读取文件数据.
+ * @param filepath 文件路径.
+ * @param fileBuffer 存放文件数据指针的指针.
+ * @return 0表示失败，否者返回读取到的字节数.
+*/
+DWORD ReadFile(IN LPCSTR filepath, OUT LPVOID* fileBuffer);
 
 /*!
- * @brief 扩大最后一个节并添加ShellCode
- * @param filePath 文件路径
- * @return 0表示失败，否则反非零
+ * @brief 该方法在.text节添加ShellCode.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
 */
-bool ExpandSection(IN LPBYTE filePath);
+DWORD AddShellCode(IN LPCSTR filePath);
 
 /*!
- * @brief 打印数据目录
- * @param filePath 文件路径
- * @return 0表示失败，1表示成功
+ * @brief 该方法把数据流写入文件中.
+ * @param buffer 数据流.
+ * @param size   写入字节数.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否者返回1.
 */
-bool ImageData(IN LPBYTE filePath);
+DWORD FwritrFile(IN LPVOID buffer, IN size_t size, OUT LPCSTR filePath);
 
 /*!
- * @brief 合并节
- * @param filePath  文件路径
- * @return 0成功，1失败
+ * @brief 该方法在.data节添加ShellCode.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
 */
-bool MergeSection(IN LPBYTE filePath);
+bool AddShellCodeInData(IN LPCSTR filePath);
+
+/*!
+ * @brief 该方法在.rdata节添加ShellCode.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
+*/
+bool AddShellCodeRdata(IN LPCSTR filePath);
+
+/*!
+ * @brief 该方法新增一个节并添加ShellCode.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
+*/
+bool AddSection(IN LPCSTR filePath);
+
+/*!
+ * @brief 扩大最后一个节并添加ShellCode.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
+*/
+bool ExpandSection(IN LPCSTR filePath);
+
+/*!
+ * @brief 打印数据目录.
+ * @param filePath 文件路径.
+ * @return 0表示失败，否则返回1.
+*/
+bool ImageData(IN LPCSTR filePath);
+
+/*!
+ * @brief 合并节.
+ * @param filePath  文件路径.
+ * @return 0表示失败，否则返回1.
+*/
+bool MergeSection(IN LPCSTR filePath);

@@ -2,7 +2,6 @@
 #include<iostream>
 #include<Windows.h>
 
-
 // 打开文件
 int openFile(FILE** _Stream,const char* FileName,const char* Mode);
 

@@ -2,15 +2,7 @@
 #include<string.h>
 
 
-/// <summary>
-/// 该方法读取一个文件的数据
-/// </summary>
-/// <param name="FilePath">文件的路径</param>
-/// <param name="FileBuffer">保存文件数据的指针的指针</param>
-/// <returns>
-/// 返回0表示读取失败，返回字节表示读取成功。
-/// </returns>
-DWORD ReadFile(IN const char* FilePath, OUT LPVOID* FileData)
+DWORD ReadFile22(IN LPCSTR FilePath, OUT LPVOID* FileData)
 {
 	if (FilePath == NULL)
 	{
@@ -57,109 +49,6 @@ DWORD ReadFile(IN const char* FilePath, OUT LPVOID* FileData)
 	return FreadResult;
 }
 
-/// <summary>
-/// 该方法复制FileBufer到ImageBuffer中
-/// </summary>
-/// <param name="FileBuffer">FileBuffer指针</param>
-/// <param name="ImageBuffer">ImageBuffer指针</param>
-/// <returns>
-/// 返回0表示失败，否则返回复制的大小
-/// </returns>
-//DWORD CopyFileBufferToImageBuffer(IN LPVOID FileBuffer, OUT LPVOID* ImageBuffer)
-//{
-//
-//	 解析 FileBuffer PE 字段
-//	PIMAGE_DOS_HEADER pDOS = NULL;
-//	PIMAGE_NT_HEADERS32 pNT = NULL;
-//	PIMAGE_FILE_HEADER pFILE = NULL;
-//	PIMAGE_OPTIONAL_HEADER32 pOPTIONAL = NULL;
-//	PIMAGE_SECTION_HEADER pSECTION = NULL;
-//
-//	 DOS头
-//	pDOS = (PIMAGE_DOS_HEADER)FileBuffer;
-//	LOG(__func__, pDOS->e_magic);
-//
-//	 复制的数据大小
-//	uint64_t CopyDataSize = 0;
-//
-//	 开辟ImageBuffer空间
-//	 ImageBuffer的空间大小在OPTIONAL.SizeOfImage字段
-//	pOPTIONAL = (PIMAGE_OPTIONAL_HEADER32)((DWORD)FileBuffer + pDOS->e_lfanew + IMAGE_SIZEOF_FILE_HEADER + IMAGE_SIZEOF_Signature);
-//
-//	 测试信息
-//	LOG(__func__, pOPTIONAL->SizeOfImage);
-//
-//	*ImageBuffer = malloc(pOPTIONAL->SizeOfImage);
-//	if (*ImageBuffer == NULL)
-//	{
-//		std::cout << "内存分配错误" << std::endl;
-//		return 0;
-//	}
-//
-//	memset(*ImageBuffer, 0, pOPTIONAL->SizeOfImage);
-//	 复制DOS,PE,节到ImageBuffer,这些数据在文件中是什么样在ImageBuffer中就是什么样子
-//	 OPTIONAL中的 SizeOfHeaders 字段就是这些数据的大小。
-//	for (int i = 0; i < pOPTIONAL->SizeOfHeaders; i++)
-//	{
-//		*((unsigned char*)*ImageBuffer + i) = *((unsigned char*)FileBuffer + i);
-//	}
-//	
-//	if (DEBUG == 1)
-//	{
-//		// 测试信息
-//		for (int i = 0; i < 0x28; i++)
-//		{
-//			printf("%02x ", *((unsigned char*)*ImageBuffer + i));
-//		}
-//	}
-//	
-//
-//	printf("\n");
-//	 通过节表中的VisualAddress字段计算该节表在内存中的偏移，进行复制，复制大小为SizeOfRawData。
-//	 首节表位置
-//	pNT = (PIMAGE_NT_HEADERS32)((BYTE*)FileBuffer + pDOS->e_lfanew);
-//	pFILE = &pNT->FileHeader;
-//	pOPTIONAL = &pNT->OptionalHeader;
-//	pSECTION = (PIMAGE_SECTION_HEADER)((BYTE*)pOPTIONAL + pFILE->SizeOfOptionalHeader);
-//
-//	 临时变量
-//	unsigned char* PIMAGE = (unsigned char*)*(ImageBuffer);
-//	unsigned char* PFILE = (unsigned char*)FileBuffer;
-//
-//	 复制节到ImageBase
-//	for (int i = 0; i < pFILE->NumberOfSections; i++)
-//	{
-//		printf("节文件偏移---->%x\n", pSECTION[i].PointerToRawData);
-//		printf("节内存偏移---->%x\n", pSECTION[i].VirtualAddress);
-//		CopyDataSize += pSECTION[i].SizeOfRawData;
-//		if (pSECTION[i].PointerToRawData == 0)
-//		{			
-//			continue;
-//		}
-//	
-//		for (int j = 0; j < pSECTION[i].SizeOfRawData; j++)
-//		{
-//			/* 两种写法，其实是一种，只是提取了一些变量使得易读*/
-//			*(PIMAGE + pSECTION[i].VirtualAddress + j) = *(PFILE + pSECTION[i].PointerToRawData + j);
-//			*((unsigned char*)*ImageBuffer + pSECTION[i].VirtualAddress + j) = *((unsigned char*)FileBuffer + pSECTION[i].PointerToRawData + j);
-//		}
-//	}
-//
-//	if (DEBUG == 1)
-//	{
-//		// 测试信息
-//		for (int j = 0; j < pSECTION[1].SizeOfRawData; j++)
-//		{
-//			printf("%02x  ", *((unsigned char*)*ImageBuffer + pSECTION[1].VirtualAddress + j));
-//		}
-//	}
-//
-//	CopyDataSize += pOPTIONAL->SizeOfHeaders;
-//	return CopyDataSize;
-//}
-
-
-// 经过GPT优化
 DWORD CopyFileBufferToImageBuffer(IN LPVOID FileBuffer, OUT LPVOID* ImageBuffer)
 {
 
@@ -215,16 +104,6 @@ DWORD CopyFileBufferToImageBuffer(IN LPVOID FileBuffer, OUT LPVOID* ImageBuffer)
 	return CopyData;
 }
 
-
-/// <summary>
-/// 该方法复制ImageBuffer到NewBuffer中，使得NewBuffer数据存盘且可运行
-/// </summary>
-/// <param name="ImageBuffer">ImageBuffer指针</param>
-/// <param name="NewBuffer">NweBuffer指针</param>
-/// <returns>
-/// 返回0表示复制失败，否者返回复制的大小
-/// </returns>
-/// 
 DWORD CopyImageBufferToNewBuffer(IN LPVOID ImageBuffer, OUT LPVOID* NewBuffer)
 {
 	// 注意NewBuffer是指针类型，传递的参数是NewBuffer指向的数据
@@ -262,23 +141,24 @@ DWORD CopyImageBufferToNewBuffer(IN LPVOID ImageBuffer, OUT LPVOID* NewBuffer)
 	// 复制DOS + PE + 节表到NewBuffer
 
 	
-
 	// NewBuffer分配空间
 	// 分配空间后会把空间首地址给*NewBuffer，所以*NewBuffer保存的是空间的地址，需要再次解引用取值。
-	*NewBuffer = malloc(pOPTIONAL->SizeOfImage);
+	*NewBuffer = malloc(pOPTIONAL->SizeOfHeaders + pOPTIONAL->SizeOfImage);
 	if (*NewBuffer == NULL)
 	{
 		std::cout << "内存分配错误" << std::endl;
 		return 0;
 	}
-	memset(*NewBuffer, 0, pOPTIONAL->SizeOfImage);
+	memset(*NewBuffer, 0, pOPTIONAL->SizeOfHeaders + pOPTIONAL->SizeOfImage);
+
+	std::cout << std::hex << pSECTION->Misc.VirtualSize << std::endl;
 	
 	// 复制Headers到NewBuffer，复制大小SizeOfHeaders
 	/*for (size_t i = 0; i < pOPTIONAL->SizeOfHeaders; i++)
 	{
 		*((char*)*NewBuffer + i) = *((char*)ImageBuffer + i);
 	}*/
-	memcpy(*NewBuffer,ImageBuffer,pOPTIONAL->SizeOfHeaders);
+	memcpy(*NewBuffer, ImageBuffer, pOPTIONAL->SizeOfHeaders);
 	uint64_t CopyData = pOPTIONAL->SizeOfHeaders;
 
 	// 复制节到NewBuffer，复制大小为SizeOfRawData, 文件偏移为PointerToRawData,数量为FILE->NumberOfSections.
@@ -292,7 +172,7 @@ DWORD CopyImageBufferToNewBuffer(IN LPVOID ImageBuffer, OUT LPVOID* NewBuffer)
 
 		void* dest = (BYTE*)*NewBuffer + pSECTION[i].PointerToRawData;
 		void* src = (BYTE*)ImageBuffer + pSECTION[i].VirtualAddress;
-		memcpy(dest, src, pSECTION[i].SizeOfRawData);
+		memcpy(dest, src, pSECTION[i].Misc.VirtualSize);
 		CopyData += pSECTION[i].SizeOfRawData;
 		/*for (int j = 0; j < pSECTION[i].SizeOfRawData; j++)
 		{
@@ -311,16 +191,6 @@ DWORD CopyImageBufferToNewBuffer(IN LPVOID ImageBuffer, OUT LPVOID* NewBuffer)
 	return CopyData;
 }
 
-
-/// <summary>
-/// 该方法将内存中的数据写入到文件中
-/// </summary>
-/// <param name="pMemBuffer">内存数据</param>
-/// <param name="size">要复制的大小</param>
-/// <param name="lpszFile">要保存文件的路径</param>
-/// <returns>
-/// 返回0表示写入失败，否则返回复制的大小
-/// </returns>
 DWORD MemeryTOFile(IN LPVOID pMemBuffer, IN size_t size, OUT LPSTR lpszFile)
 {
 	
@@ -339,14 +209,6 @@ DWORD MemeryTOFile(IN LPVOID pMemBuffer, IN size_t size, OUT LPSTR lpszFile)
 	return 0;
 }
 
-/// <summary>
-/// 该方法把内存偏移转为文件偏移
-/// </summary>
-/// <param name="FileBuffer">FileBuffer指针</param>
-/// <param name="dwRva">内存偏移</param>
-/// <returns>
-/// 返回0表示转换失败，否则返回文件偏移FOA
-/// </returns>
 DWORD RvaTOFileOffset(IN LPVOID FileBuffer, IN DWORD dwRva)
 {
 	// 获取 PE 结构基本信息
