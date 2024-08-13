@@ -6,30 +6,10 @@
 
 #define FilePath "D:\\PE\\LordPE.exe"
 
-//extern "C" __declspec(dllimport) int __stdcall add(int x, int y);
 
-typedef int(__cdecl *pAdd)(int, int);
 
 int main()
 {
-	//printf("%d\n", add(1, 3));
-
-	HINSTANCE hMoudle = LoadLibrary(L"Dll1.dll");
-	if (hMoudle == NULL)
-	{
-		std::cout << "´íÎó" << std::endl;
-		return 0;
-	}
-
-	pAdd padd = (pAdd)GetProcAddress(hMoudle, (LPCSTR)1);
-	if (padd == nullptr)
-	{
-		std::cout << padd << std::endl;
-		return 0;
-	}
-	std::cout << "º¯ÊýµØÖ·----> " << padd << std::endl;
-	printf("%d\n", padd(2, 1));
-
 	/*LPVOID FileBuffer = NULL;
 	DWORD readFileSize = ReadFile(FilePath, &FileBuffer);
 	free((void*)FileBuffer);*/
@@ -53,8 +33,4 @@ int main()
 	
 	return 0;
 }
-
-
-
-
 

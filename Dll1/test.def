@@ -1,4 +1,3 @@
 LIBRARY Dll1.dll
 EXPORTS
 
-sub		@1

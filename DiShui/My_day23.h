@@ -69,3 +69,5 @@ bool ImageData(IN LPCSTR filePath);
  * @return 0表示失败，否则返回1.
 */
 bool MergeSection(IN LPCSTR filePath);
+
+//DWORD RVA_FOV(DWORD RVA, LPVOID fileBuffer);
