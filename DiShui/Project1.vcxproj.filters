@@ -27,10 +27,10 @@
     <ClCompile Include="my_head.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
-    <ClCompile Include="my_25.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="day25.cpp">
+      <Filter>源文件\PE</Filter>
+    </ClCompile>
+    <ClCompile Include="my_25.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
   </ItemGroup>

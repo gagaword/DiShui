@@ -10,7 +10,9 @@ struct PEHeaders {
 	PIMAGE_FILE_HEADER fileHeader;
 	PIMAGE_OPTIONAL_HEADER32 optionalHeader;
 	PIMAGE_SECTION_HEADER sectionHeader;
+	PIMAGE_DATA_DIRECTORY dataHeaders;
 };
+
 
 /*!
  * @brief 该方法用于获取各个头.
@@ -18,7 +20,7 @@ struct PEHeaders {
  * @param peheader PEheaders结构
  * @return 0表示失败,否则返回1.
 */
-bool GetPeheadersInfo(LPVOID Buffer, PEHeaders peheader);
+bool GetPeheadersInfo(LPVOID Buffer, PEHeaders &peheader);
 
 /*!
  * @brief 该方法打印提供文件的导出表数据.
@@ -26,3 +28,19 @@ bool GetPeheadersInfo(LPVOID Buffer, PEHeaders peheader);
  * @return 0表示失败，否则返回1.
 */
 bool PrintDataExport(LPCSTR filePath);
+
+/*!
+ * @brief 该方法把RVA转为FOV
+ * @param RVA RVA
+ * @param fileBuffer 具有PE文件特征的数据流
+ * @return 0表示失败，否则返FOV
+*/
+DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer);
+
+/*!
+ * @brief 该方法将 value 以 alginValue 对齐
+ * @param value 目标值
+ * @param alginValue 对齐值
+ * @return 0失败，否则返回对齐后的值
+*/
+DWORD algin(DWORD value, DWORD alginValue);
