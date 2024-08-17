@@ -67,22 +67,17 @@ bool PrintDataExport(LPCSTR filePath)
 	// 读取文件到FileBuffer
 	LPVOID fileBuffer = NULL;
 	DWORD readFileResult = ReadFile(filePath, &fileBuffer);
-
 	if (!readFileResult)
 	{
 		return false;
 	}
-
 	// 获取PE信息
 	PEHeaders peheader;
 	bool GetPEInfo = GetPeheadersInfo(fileBuffer, peheader);
-	
-
 	if (!GetPEInfo)
 	{
 		return false;
 	}
-
 	// 导出表位置
 	// 通过PEHeaders获取导出表位置
 	DWORD VA = 0;
@@ -91,22 +86,18 @@ bool PrintDataExport(LPCSTR filePath)
 	{
 		std::cout << std::hex << "PEHeaders Data_Exports Address------>" << VA << std::endl;
 	}
-
 	// 通过OPTIONAL获取到导出表
 	//std::cout << "Optional Data_Exports Address------->"  <<  peheader.optionalHeader->DataDirectory[0].VirtualAddress << std::endl;
-	
 	// RVA转FOV
 	DWORD FOV = RvaToFov(VA, fileBuffer);
 	if (DEBUG)
 	{
 		std::cout << std::hex << "FOV-----> " << FOV << std::endl;
 	}
-
 	// 导出表
 	PIMAGE_EXPORT_DIRECTORY pExport = (PIMAGE_EXPORT_DIRECTORY)((BYTE*)fileBuffer + FOV);
-	
-	std::cout << "**********************Export Info*******************************" << std::endl;
 
+	std::cout << "**********************Export Info*******************************" << std::endl;
 	std::cout << "模块名称地址-------------> " << std::hex << std::uppercase << pExport->Name << std::endl;
 	std::cout << "基址---------------------> " << pExport->Base << std::endl;
 	std::cout << "函数数量-----------------> " << pExport->NumberOfFunctions << std::endl;
@@ -114,7 +105,6 @@ bool PrintDataExport(LPCSTR filePath)
 	std::cout << "函数地址-----------------> " << std::hex << std::uppercase << pExport->AddressOfFunctions << std::endl;
 	std::cout << "函数名称地址-------------> " << std::hex << std::uppercase << pExport->AddressOfNames << std::endl;
 	std::cout << "函数名称序号地址---------> " << std::hex << std::uppercase << pExport->AddressOfNameOrdinals << std::endl;
-
 
 	DWORD AddressNamesFov = RvaToFov(pExport->AddressOfNames, fileBuffer);
 	DWORD NameFOV = RvaToFov(pExport->Name, fileBuffer);
@@ -125,17 +115,14 @@ bool PrintDataExport(LPCSTR filePath)
 	std::cout << "函数名称:文件偏移------> " << std::hex << std::uppercase << AddressNamesFov << std::endl;
 	std::cout << "函数地址:文件偏移------> " << std::hex << std::uppercase << AddressFunction << std::endl;
 	std::cout << "函数序号:文件偏移------> " << std::hex << std::uppercase << AddressNameOrdinals << std::endl;
-
-
 	std::cout << "*****************************Function Info*************************************" << std::endl;
 
 	printf("文件名称---->%s\n", ((char*)fileBuffer + NameFOV));
-
 	// 获取信息
 	DWORD* pNameArray = (DWORD*)((BYTE*)fileBuffer + AddressNamesFov);
 	DWORD* pFunctionAddress = (DWORD*)((BYTE*)fileBuffer + AddressFunction);
 	WORD* pNameOrdinals = (WORD*)((BYTE*)fileBuffer + AddressNameOrdinals);
-	
+
 	for (DWORD i = 0; i < pExport->NumberOfNames; i++) {
 		std::cout << "********** Function:" << i << " ******************" << std::endl;
 		DWORD functionNameFov = RvaToFov(pNameArray[i], fileBuffer);
@@ -146,7 +133,6 @@ bool PrintDataExport(LPCSTR filePath)
 		std::cout << "Function RVA: " << std::hex << std::uppercase << functionAddresss << std::endl;
 		printf("Function Name: %s\nFunction Ordinal: %d\n", (char*)fileBuffer + functionNameFov, functionOrdinal);
 	}
-
 	return true;
 }
 
@@ -194,6 +180,64 @@ DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer)
 	return 0;
 }
 
+DWORD FunctionSerialToInfo(DWORD serial, LPCSTR filePath)
+{
+	if (filePath == NULL)
+	{
+		return 0;
+	}
+
+	LPVOID fileBuffer = NULL;
+	DWORD readfileResu = ReadFile(filePath, &fileBuffer);
+	if (!readfileResu)
+	{
+		return 0;
+	}
+
+	PEHeaders peheader;
+	if (!GetPeheadersInfo(fileBuffer, peheader))
+	{
+		return 0;
+	}
+
+	// 导出表信息
+	DWORD pExport = peheader.dataHeaders[0].VirtualAddress;
+	DWORD pExportFile = (DWORD)((BYTE*)fileBuffer + RvaToFov(pExport, fileBuffer));
+	PIMAGE_EXPORT_DIRECTORY pExport_DI = (PIMAGE_EXPORT_DIRECTORY)pExportFile;
+
+	// 序列号
+	WORD* pserialFOV = (WORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfNameOrdinals, fileBuffer));
+
+	DWORD* pAddressFunc = (DWORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfFunctions, fileBuffer));
+
+	// 函数名称
+	DWORD* pFuncNameFOV_1 = (DWORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfNames, fileBuffer));
+
+	// 函数内存地址
+	DWORD pFuncAddress = 0;
+	// 函数文件地址
+	DWORD pFuncAddressFile = 0;
+	// 函数名称
+	LPCSTR funcName = 0;
+
+	for (size_t i = 0; i < pExport_DI->NumberOfFunctions; i++)
+	{
+		WORD serial_this = pserialFOV[i];
+		if (serial_this == serial)
+		{
+			pFuncAddress = pAddressFunc[i];
+			pFuncAddressFile = RvaToFov(pAddressFunc[i], fileBuffer);
+			DWORD name = RvaToFov(pFuncNameFOV_1[i], fileBuffer);
+			funcName = (char*)(BYTE*)fileBuffer + name;
+		}
+	}
+
+	printf("%x\n", pFuncAddress);
+	printf("%x\n", pFuncAddressFile);
+	printf("%s\n", funcName);
+
+}
+
 DWORD algin(DWORD value, DWORD alginValue)
 {
 	if (alginValue == 0)
@@ -201,4 +245,74 @@ DWORD algin(DWORD value, DWORD alginValue)
 		return value;
 	}
 	return (value + alginValue - 1) / alginValue * alginValue;
+}
+
+DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath)
+{
+	if (funName == NULL || filePath == NULL)
+	{
+		return 0;
+	}
+
+	LPVOID fileBuffer = NULL;
+
+	DWORD readfileResult = ReadFile(filePath, &fileBuffer);
+	if (!readfileResult)
+	{
+		return 0;
+	}
+
+	PEHeaders peheader;
+	if (!GetPeheadersInfo(fileBuffer, peheader))
+	{
+		return 0;
+	}
+
+	DWORD exportAddress = peheader.dataHeaders[0].VirtualAddress;
+	exportAddress = RvaToFov(exportAddress,fileBuffer);
+
+	PIMAGE_EXPORT_DIRECTORY pExport = (PIMAGE_EXPORT_DIRECTORY)(DWORD*)((BYTE*)fileBuffer + exportAddress);
+
+	DWORD addressNamesFOV = RvaToFov(pExport->AddressOfNames, fileBuffer);
+	DWORD* arrayName = ((DWORD*)((BYTE*)fileBuffer + addressNamesFOV));
+
+	DWORD funcAddress = RvaToFov(pExport->AddressOfFunctions, fileBuffer);
+	DWORD* funcAddressFileFov = (DWORD*)((BYTE*)fileBuffer + funcAddress);
+
+	// 函数文件偏移
+	DWORD funcFileFov = 0;
+	// 函数内存地址
+	DWORD funcMemeryAddress = 0;
+
+	DWORD funcFileAddressSerial = (DWORD)RvaToFov(pExport->AddressOfNameOrdinals, fileBuffer);
+	WORD* funcFileSerial = (WORD*)((BYTE*)fileBuffer + funcFileAddressSerial);
+
+	// 函数序列号
+	DWORD funcSerial = 0;
+
+	for (size_t i = 0; i < pExport->NumberOfFunctions; i++)
+	{
+		DWORD NamesAddress =  RvaToFov(arrayName[i], fileBuffer);
+		char* _func_name = (char*)((BYTE*)fileBuffer + NamesAddress);
+		if (!strcmp(_func_name, funName))
+		{
+			std::cout << _func_name << std::endl;
+			funcMemeryAddress = funcAddressFileFov[i];
+			funcFileFov = RvaToFov(funcAddressFileFov[i],fileBuffer);
+			funcSerial = funcFileSerial[i];
+			break;
+		}
+		else
+		{
+			std::cerr << "未找到函数" << std::endl;
+			return 0;
+		}
+	}
+
+	std::cout << "********************funcTion Info********************" << std::endl;
+	std::cout << std::hex << funcMemeryAddress << std::endl;
+	std::cout << std::hex << funcFileFov << std::endl;
+	std::cout << std::hex << funcSerial << std::endl;
+
+	return 1;
 }

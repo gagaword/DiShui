@@ -30,6 +30,21 @@ bool GetPeheadersInfo(LPVOID Buffer, PEHeaders &peheader);
 bool PrintDataExport(LPCSTR filePath);
 
 /*!
+ * @brief 该方法根据提供的函数序号打印出函数信息,函数序号从0开始
+ * @param serial 函数序号
+ * @param filePath 文件路径
+ * @return 0表示失败，否则返回1.
+*/
+DWORD FunctionSerialToInfo(DWORD serial, LPCSTR filePath);
+
+/*!
+ * @brief 该方法通过方法名称获取方法信息
+ * @param funName 方法名称
+ * @return 0表示失败，否则返回方法地址.
+*/
+DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath);
+
+/*!
  * @brief 该方法把RVA转为FOV
  * @param RVA RVA
  * @param fileBuffer 具有PE文件特征的数据流

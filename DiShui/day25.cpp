@@ -5,7 +5,12 @@
 
 int main()
 {
-	PrintDataExport(filePath);
-	
+	//PrintDataExport(filePath);
+
+	LPCSTR name = "_add@8";
+	//FunctionNameToInfo(name, filePath);
+
+	FunctionSerialToInfo(0, filePath);
 	return 0;
 }
+
