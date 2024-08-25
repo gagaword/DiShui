@@ -156,7 +156,7 @@ DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer)
 	size_t is = 0;
 	for (size_t i = 0; i < numberSection; i++)
 	{
-		if (RVA >= peheader.sectionHeader[i].VirtualAddress && RVA <= peheader.sectionHeader[i + 1].VirtualAddress)
+		if (RVA >= peheader.sectionHeader[i].VirtualAddress && RVA <= peheader.sectionHeader[i].VirtualAddress + peheader.sectionHeader[i].Misc.VirtualSize)
 		{
 			VA = peheader.sectionHeader[i].VirtualAddress;
 			PR = peheader.sectionHeader[i].PointerToRawData;
@@ -247,14 +247,37 @@ DWORD algin(DWORD value, DWORD alginValue)
 	return (value + alginValue - 1) / alginValue * alginValue;
 }
 
+DWORD FoaToRva(DWORD Foa, LPVOID fileBuffer)
+{
+	if (Foa == NULL || fileBuffer == nullptr)
+	{
+		return 0;
+	}
+	PEHeaders peheader;
+	if (!GetPeheadersInfo(fileBuffer, peheader))
+	{
+		return 0;
+	}
+	for (size_t i = 0; i < peheader.fileHeader->NumberOfSections; i++)
+	{
+		if (Foa >= peheader.sectionHeader[i].PointerToRawData && Foa < peheader.sectionHeader[i].SizeOfRawData + peheader.sectionHeader[i].PointerToRawData)
+		{
+			DWORD pointerData = peheader.sectionHeader[i].PointerToRawData;
+			DWORD VA = peheader.sectionHeader[i].VirtualAddress;
+			return Foa - pointerData + VA;
+		}
+	}
+	return 0;
+}
+
 DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath)
 {
-	if (funName == NULL || filePath == NULL)
+	if (funName == nullptr || filePath == nullptr)
 	{
 		return 0;
 	}
 
-	LPVOID fileBuffer = NULL;
+	LPVOID fileBuffer = nullptr;
 
 	DWORD readfileResult = ReadFile(filePath, &fileBuffer);
 	if (!readfileResult)

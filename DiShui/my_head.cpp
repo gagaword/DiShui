@@ -6,7 +6,6 @@
 #define PRINTFLOGSTRING(FunName,VALUES) if((DEBUG) == 1){printf("%s-------->%s\n", FunName, VALUES);}
 #define PRINTFLOG(FunName,VALUES) if((DEBUG) == 1){printf("%s-------->%x\n", FunName, VALUES);}
 
-
 const char PE[] = {
 	0x4D,0x5A
 };
@@ -27,7 +26,6 @@ int openFile(FILE** _Stream, const char* FileName, const char* Mode)
 	PRINTFLOG(__func__, *(_Stream));
 	return TRUE;
 }
-
 
 size_t GetFileSize(FILE* stream)
 {
@@ -89,8 +87,6 @@ int CheckPE(unsigned char* buuferFile)
 	}
 	return 0;
 }
-
-
 
 LPVOID ReadFile(const char* FilePath)
 {

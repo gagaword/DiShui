@@ -93,8 +93,7 @@ DWORD ReadFile(IN LPCSTR filepath, OUT LPVOID* fileBuffer)
 
 // 插入ShellCode
 DWORD AddShellCode(IN LPCSTR filePath)
-{
-	
+{	
 	std::cout << "MessageBoxExA_Address---->" << MessageBoxA_address << std::endl;
 
 	if (filePath == NULL)
@@ -426,7 +425,7 @@ bool AddShellCodeRdata(IN LPCSTR filePath)
 	return true;
 }
 
-// 新增一个节
+// 该方法新增一个节并添加ShellCode
 bool AddSection(IN LPCSTR filePath)
 {
 	if (filePath == nullptr)
@@ -545,7 +544,6 @@ bool AddSection(IN LPCSTR filePath)
 	DWORD PointerToRawData = newFileOffset + newSizeRawData;
 	std::cout << "NewSection----> PointerToRawData--> " << std::hex << PointerToRawData << std::endl;
 
-	
 	// 修正hexData
 	memcpy_s(&hexData[1], sizeof(Name), Name, sizeof(Name));
 	memcpy_s(&hexData[8], sizeof(addByte), &addByte, sizeof(addByte));
@@ -872,9 +870,9 @@ LPCSTR newFilePathName(LPCSTR filepath)
 	}
 	memset(newFilePath, 0, len + 5);
 	strcpy_s(newFilePath, len + 5, filepath);
-	char* newPath = strstr(newFilePath, ".exe");
+	char* newPath = strstr(newFilePath, ".dll");
 	if (newPath != NULL) {
-		strcpy_s(newPath, strlen("_new.exe") + 1, "_new.exe");
+		strcpy_s(newPath, strlen("_new.dll") + 1, "_new.dll");
 	}
 	return newFilePath;
 }

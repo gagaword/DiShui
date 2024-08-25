@@ -13,7 +13,6 @@ struct PEHeaders {
 	PIMAGE_DATA_DIRECTORY dataHeaders;
 };
 
-
 /*!
  * @brief 该方法用于获取各个头.
  * @param Buffer 具有PE格式的数据流.
@@ -51,6 +50,14 @@ DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath);
  * @return 0表示失败，否则返FOV
 */
 DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer);
+
+/**
+ * @brief 该方法把FOA转为RVA
+ * @param Foa FOA
+ * @param fileBuffer 具有PE文件特征的数据流
+ * @return 0表示失败，否则返回FOA
+*/
+DWORD FoaToRva(DWORD Foa, LPVOID fileBuffer);
 
 /*!
  * @brief 该方法将 value 以 alginValue 对齐

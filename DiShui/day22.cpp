@@ -1,7 +1,6 @@
 #include "day22.h"
 #include<string.h>
 
-
 DWORD ReadFile22(IN LPCSTR FilePath, OUT LPVOID* FileData)
 {
 	if (FilePath == NULL)
