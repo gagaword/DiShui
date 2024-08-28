@@ -30,10 +30,13 @@
     <ClCompile Include="day26.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
-    <ClCompile Include="my_day26.cpp">
+    <ClCompile Include="my_25.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
-    <ClCompile Include="my_25.cpp">
+    <ClCompile Include="day27.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="may_day27.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,6 +57,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="day26.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="day27.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

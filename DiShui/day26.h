@@ -5,7 +5,6 @@
 #include "my_25.h"
 
 
-
 /*!
  * @brief 该方法打印提供PE文件的重定位表
  * @param filePath 文件路径
@@ -26,7 +25,3 @@ bool MoveExport(LPCSTR filePath);
  * @return 0表示失败，否则返回1.
 */
 bool MoveBaseReloc(LPCSTR filePath);
-
-
-
-bool AddSectionAndExportTable(LPCSTR filePath);

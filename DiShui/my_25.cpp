@@ -49,10 +49,25 @@ bool GetPeheadersInfo(LPVOID Buffer, PEHeaders &peheader)
 
 	// DATA HEADER
 	peheader.dataHeaders = (PIMAGE_DATA_DIRECTORY)&peheader.optionalHeader->DataDirectory;
+	
+	peheader.exportSection = (PIMAGE_EXPORT_DIRECTORY)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
 	if (DEBUG)
 	{
-		std::cout << "Export VirtualAddress------> " << peheader.dataHeaders[0].VirtualAddress << std::endl;
+		std::cout << "Export VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress << std::endl;
 	}
+
+	peheader.importSection = (PIMAGE_IMPORT_DESCRIPTOR)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+	if (DEBUG)
+	{
+		std::cout << "Impotr VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress << std::endl;
+	}
+
+	peheader.baseSection = (PIMAGE_BASE_RELOCATION)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
+	if (DEBUG)
+	{
+		std::cout << "BASE VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress << std::endl;
+	}
+
 	return true;
 }
 

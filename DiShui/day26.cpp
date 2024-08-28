@@ -287,42 +287,42 @@ bool MoveBaseReloc(LPCSTR filePath)
 	newPehear.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size = DataNumer;
 
 	// 修改基地址，修正重定位表
-	//newPehear.optionalHeader->ImageBase += 0x1000;
-	//PIMAGE_BASE_RELOCATION pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, newBuffer));
+	newPehear.optionalHeader->ImageBase += 0x1000;
+	PIMAGE_BASE_RELOCATION pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, newBuffer));
 
-	//while (pNewBASE_DATA->VirtualAddress != 0)
-	//{
-	//	// 数据数量
-	//	DWORD BaseNumer = (pNewBASE_DATA->SizeOfBlock - (sizeof(DWORD) * 2)) / sizeof(WORD);
-	//	// 起始位置
-	//	WORD* BaseAddress1 = (WORD*)((BYTE*)pNewBASE_DATA + sizeof(DWORD) * 2);
+	while (pNewBASE_DATA->VirtualAddress != 0)
+	{
+		// 数据数量
+		DWORD BaseNumer = (pNewBASE_DATA->SizeOfBlock - (sizeof(DWORD) * 2)) / sizeof(WORD);
+		// 起始位置
+		WORD* BaseAddress1 = (WORD*)((BYTE*)pNewBASE_DATA + sizeof(DWORD) * 2);
 
-	//	for (size_t i = 0; i < BaseNumer; i++)
-	//	{
-	//		WORD typeOffset = *BaseAddress1;
-	//		DWORD type = (typeOffset & 0xF000) >> 12;
-	//		DWORD offset = typeOffset & 0x0FFF;
+		for (size_t i = 0; i < BaseNumer; i++)
+		{
+			WORD typeOffset = *BaseAddress1;
+			DWORD type = (typeOffset & 0xF000) >> 12;
+			DWORD offset = typeOffset & 0x0FFF;
 
-	//		if (type != IMAGE_REL_BASED_HIGHLOW)
-	//		{
-	//			break;
-	//		}
+			if (type != IMAGE_REL_BASED_HIGHLOW)
+			{
+				break;
+			}
 
-	//		// 计算需要修正的相对虚拟地址
-	//		DWORD rvaToPatch = pNewBASE_DATA->VirtualAddress + offset;
+			// 计算需要修正的相对虚拟地址
+			DWORD rvaToPatch = pNewBASE_DATA->VirtualAddress + offset;
 
-	//		// 将RVA转换为文件偏移（FOA）
-	//		DWORD fileOffsetToPatch = RvaToFov(rvaToPatch, newBuffer);
+			// 将RVA转换为文件偏移（FOA）
+			DWORD fileOffsetToPatch = RvaToFov(rvaToPatch, newBuffer);
 
-	//		// 获取要修正的内存位置
-	//		DWORD* patchLocation = (DWORD*)((BYTE*)newBuffer + fileOffsetToPatch);
-	//		*patchLocation += 0x1000;
-	//		BaseAddress1++;
-	//	}
+			// 获取要修正的内存位置
+			DWORD* patchLocation = (DWORD*)((BYTE*)newBuffer + fileOffsetToPatch);
+			*patchLocation += 0x1000;
+			BaseAddress1++;
+		}
 
-	//	// 移动到下一个重定位表
-	//	pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)pNewBASE_DATA + pNewBASE_DATA->SizeOfBlock);
-	//}
+		// 移动到下一个重定位表
+		pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)pNewBASE_DATA + pNewBASE_DATA->SizeOfBlock);
+	}
 
 	if (!FwritrFile(newBuffer, (readfileResu + addByte), filePath))
 	{

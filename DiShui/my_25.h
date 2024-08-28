@@ -11,6 +11,9 @@ struct PEHeaders {
 	PIMAGE_OPTIONAL_HEADER32 optionalHeader;
 	PIMAGE_SECTION_HEADER sectionHeader;
 	PIMAGE_DATA_DIRECTORY dataHeaders;
+	PIMAGE_EXPORT_DIRECTORY exportSection;
+	PIMAGE_IMPORT_DESCRIPTOR importSection;
+	PIMAGE_BASE_RELOCATION baseSection;
 };
 
 /*!
