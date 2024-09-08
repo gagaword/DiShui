@@ -2,11 +2,11 @@
 #include"day27.h"
 #include"my_25.h"
 
-#define filePath "D:\\DriveLoading\\InstDrv1.exe"
+#define filePath "D:\\Repos\\gagaword\\MyProject\\Debug\\Dll1.dll"
 
 int main()
 {
-	PritfImport(filePath);
-
+	//PritfImport(filePath);
+	PrintfImportdescriptor(filePath);
 	return 0;
 }

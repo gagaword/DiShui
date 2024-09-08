@@ -13,14 +13,14 @@
 bool PrintBaseloc(LPCSTR filePath);
 
 /**
- * @brief 该方法把PE文件中的导出表移动到新的节中
+ * @brief 该方法移动导出表移动到新的节中
  * @param filePath 文件路径
  * @return 0表示失败，否则返回1.
 */
 bool MoveExport(LPCSTR filePath);
 
 /**
- * @brief 该方法移动导出表到新节
+ * @brief 该方法移动重定位表到新节
  * @param filePath 文件路径
  * @return 0表示失败，否则返回1.
 */

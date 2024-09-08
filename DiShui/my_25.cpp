@@ -68,6 +68,11 @@ bool GetPeheadersInfo(LPVOID Buffer, PEHeaders &peheader)
 		std::cout << "BASE VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress << std::endl;
 	}
 
+	peheader.descriptorSection = (PIMAGE_BOUND_IMPORT_DESCRIPTOR)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR].VirtualAddress;
+	if (DEBUG)
+	{
+		std::cout << "DESCRIPTOR VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR].VirtualAddress << std::endl;
+	}
 	return true;
 }
 

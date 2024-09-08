@@ -14,6 +14,8 @@ struct PEHeaders {
 	PIMAGE_EXPORT_DIRECTORY exportSection;
 	PIMAGE_IMPORT_DESCRIPTOR importSection;
 	PIMAGE_BASE_RELOCATION baseSection;
+	PIMAGE_BOUND_IMPORT_DESCRIPTOR descriptorSection;
+	PIMAGE_BOUND_FORWARDER_REF refsection;
 };
 
 /*!
