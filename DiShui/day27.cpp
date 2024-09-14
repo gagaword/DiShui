@@ -136,7 +136,11 @@ bool PrintfImportdescriptor(LPCSTR filePath)
 		return false;
 	}
 
-	PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress, fileBuffer)));
+	//PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress, fileBuffer)));
+	PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(*(DWORD*)peheaders.importSection, fileBuffer)));
+
+	cout << hex << uppercase << peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT].VirtualAddress << endl;
+	cout << hex << uppercase << *(DWORD*)peheaders.descriptorSection << endl;
 	bool isdescriprot = 0;
 	while (importAddress->OriginalFirstThunk != 0 && importAddress->FirstThunk != 0)
 	{
@@ -153,6 +157,13 @@ bool PrintfImportdescriptor(LPCSTR filePath)
 	if (isdescriprot)
 	{
 		cout << "该程序没有绑定导入表" << endl;
+	}
+	else
+	{
+		cout << peheaders.descriptorSection->TimeDateStamp << endl;
+		cout << hex << uppercase << peheaders.descriptorSection->NumberOfModuleForwarderRefs << endl;
+		DWORD nameAddress = (DWORD)((BYTE*)fileBuffer + peheaders.descriptorSection->OffsetModuleName);
+		cout << (char*)nameAddress << endl;
 	}
 	return false;
 }

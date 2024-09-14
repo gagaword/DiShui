@@ -50,24 +50,28 @@ bool GetPeheadersInfo(LPVOID Buffer, PEHeaders &peheader)
 	// DATA HEADER
 	peheader.dataHeaders = (PIMAGE_DATA_DIRECTORY)&peheader.optionalHeader->DataDirectory;
 	
+	// 导出表
 	peheader.exportSection = (PIMAGE_EXPORT_DIRECTORY)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
 	if (DEBUG)
 	{
 		std::cout << "Export VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress << std::endl;
 	}
 
+	// 导入表
 	peheader.importSection = (PIMAGE_IMPORT_DESCRIPTOR)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
 	if (DEBUG)
 	{
 		std::cout << "Impotr VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress << std::endl;
 	}
 
+	// 重定位表
 	peheader.baseSection = (PIMAGE_BASE_RELOCATION)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
 	if (DEBUG)
 	{
 		std::cout << "BASE VirtualAddress------> " << peheader.dataHeaders[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress << std::endl;
 	}
 
+	// 绑定导入表
 	peheader.descriptorSection = (PIMAGE_BOUND_IMPORT_DESCRIPTOR)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR].VirtualAddress;
 	if (DEBUG)
 	{
