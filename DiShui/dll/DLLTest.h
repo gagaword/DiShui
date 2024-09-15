@@ -7,10 +7,10 @@ extern "C" __declspec(dllexport) int __stdcall sub(int x, int y);
 extern "C" __declspec(dllexport) int __stdcall imul(int x, int y);
 
 // 不发布
-int  inti();
+void  inti();
 
 // 不发布
-int  del();
+void  del();
 
 extern "C" __declspec(dllexport) void ExportFunction();
 

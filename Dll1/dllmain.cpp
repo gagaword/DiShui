@@ -12,11 +12,13 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         // dll加载的时候执行这个
     case DLL_PROCESS_ATTACH:
         inti();
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
+        break;
         // dll卸载的时候执行这个
     case DLL_PROCESS_DETACH:
         del();
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
         break;
     }
     return TRUE;
