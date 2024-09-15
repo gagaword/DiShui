@@ -1,7 +1,10 @@
 #include<iostream>
 #include"day28.h"
 
-//int main()
-//{
-//	return 0;
-//}
+// ÒþÊ½µ÷ÓÃ
+extern "C" __declspec(dllexport) void ExportFunction();
+int main()
+{
+	ExportFunction();
+	return 0;
+}

@@ -42,9 +42,6 @@
     <ClCompile Include="my_day28.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
-    <ClCompile Include="may_day27.cpp">
-      <Filter>源文件\PE</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="My_day23.h">

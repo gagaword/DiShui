@@ -23,7 +23,6 @@
     <ClCompile Include="day26.cpp" />
     <ClCompile Include="day27.cpp" />
     <ClCompile Include="day28.cpp" />
-    <ClCompile Include="may_day27.cpp" />
     <ClCompile Include="my_25.cpp" />
     <ClCompile Include="My_day23.cpp" />
     <ClCompile Include="my_day28.cpp" />
@@ -95,10 +94,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>D:\Repos\gagaword\MyProject\DiShui\dll;D:\Repos\gagaword\MyProject\DiShui\Lib;$(LibraryPath)</LibraryPath>
-    <ExecutablePath>D:\Repos\gagaword\MyProject\DiShui\dll;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryWPath>$(LibraryWPath)</LibraryWPath>
+    <ExecutablePath>D:\Repos\gagaword\MyProject\DiShui\dll;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

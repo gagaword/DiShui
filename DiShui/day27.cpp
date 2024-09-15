@@ -139,8 +139,15 @@ bool PrintfImportdescriptor(LPCSTR filePath)
 	//PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress, fileBuffer)));
 	PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(*(DWORD*)peheaders.importSection, fileBuffer)));
 
-	cout << hex << uppercase << peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT].VirtualAddress << endl;
-	cout << hex << uppercase << *(DWORD*)peheaders.descriptorSection << endl;
+	// 处理绑定导入表
+	if (peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT].VirtualAddress == 0)
+	{
+		cout << "VirtualAddress值异常,该程序没有绑定导入表" << endl;
+		return false;
+	}
+
+	// 当目标文件存在绑定导入表时
+	PIMAGE_BOUND_IMPORT_DESCRIPTOR descriptorAddress = (PIMAGE_BOUND_IMPORT_DESCRIPTOR)((DWORD*)((BYTE*)fileBuffer + RvaToFov(peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT].VirtualAddress, fileBuffer)));
 	bool isdescriprot = 0;
 	while (importAddress->OriginalFirstThunk != 0 && importAddress->FirstThunk != 0)
 	{
@@ -160,10 +167,27 @@ bool PrintfImportdescriptor(LPCSTR filePath)
 	}
 	else
 	{
-		cout << peheaders.descriptorSection->TimeDateStamp << endl;
-		cout << hex << uppercase << peheaders.descriptorSection->NumberOfModuleForwarderRefs << endl;
-		DWORD nameAddress = (DWORD)((BYTE*)fileBuffer + peheaders.descriptorSection->OffsetModuleName);
-		cout << (char*)nameAddress << endl;
+		DWORD NameBase = (DWORD)descriptorAddress;
+		while (peheaders.descriptorSection->OffsetModuleName != 0)
+		{
+			cout << (char*)(NameBase + peheaders.descriptorSection->OffsetModuleName) << endl;
+			cout << peheaders.descriptorSection->TimeDateStamp << endl;
+			cout << hex << uppercase << peheaders.descriptorSection->NumberOfModuleForwarderRefs << endl;
+			DWORD temp = peheaders.descriptorSection->NumberOfModuleForwarderRefs;
+			// 遍历每个引用
+			for (DWORD i = 0; i < temp; ++i)
+			{
+				cout << "**********************REF****************************" << endl;
+				PIMAGE_BOUND_FORWARDER_REF refAddress = (PIMAGE_BOUND_FORWARDER_REF)(
+					(BYTE*)descriptorAddress + sizeof(IMAGE_BOUND_IMPORT_DESCRIPTOR) + i * sizeof(IMAGE_BOUND_FORWARDER_REF));
+
+				const char* refModuleName = (char*)(NameBase + refAddress->OffsetModuleName);
+				cout << "Referenced DLL: " << refModuleName << endl;
+				cout << "Forwarder TimeDateStamp: " << refAddress->TimeDateStamp << endl;
+			}
+			// 获取下一个模块
+			descriptorAddress += sizeof(IMAGE_BOUND_IMPORT_DESCRIPTOR) + temp * sizeof(IMAGE_BOUND_FORWARDER_REF);
+		}
 	}
 	return false;
 }

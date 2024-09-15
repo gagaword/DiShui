@@ -162,16 +162,12 @@ bool PrintDataExport(LPCSTR filePath)
 
 DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer)
 {
-	if (RVA == NULL || fileBuffer == nullptr)
-	{
-		return 0;
-	}
+	if (RVA == NULL || fileBuffer == nullptr)return 0;
+	
 
 	PEHeaders peheader;
-	if (!GetPeheadersInfo(fileBuffer, peheader))
-	{
-		return 0;
-	}
+	if (!GetPeheadersInfo(fileBuffer, peheader))return 0;
+	
 	
 	// 确定RVA在哪个节
 	size_t numberSection = peheader.fileHeader->NumberOfSections;
@@ -199,7 +195,11 @@ DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer)
 	{
 		FOA = (RVA - VA) + PR;
 		return FOA;
-
+	}
+	// 当RVA小于任何节表，RVA在头部信息中，直接返回RVA
+	else
+	{
+		return RVA;
 	}
 	return 0;
 }
