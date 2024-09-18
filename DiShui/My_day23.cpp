@@ -870,9 +870,9 @@ LPCSTR newFilePathName(LPCSTR filepath)
 	}
 	memset(newFilePath, 0, len + 5);
 	strcpy_s(newFilePath, len + 5, filepath);
-	char* newPath = strstr(newFilePath, ".dll");
+	char* newPath = strstr(newFilePath, ".exe");
 	if (newPath != NULL) {
-		strcpy_s(newPath, strlen("_new.dll") + 1, "_new.dll");
+		strcpy_s(newPath, strlen("_new.exe") + 1, "_new.exe");
 	}
 	return newFilePath;
 }
