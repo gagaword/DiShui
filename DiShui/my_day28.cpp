@@ -2,7 +2,7 @@
 #include"day28.h"
 #include<Windows.h>
 
-#define filePath "D:\\PE\\PETool 1.0.0.5.exe"
+#define filePath "D:\\DriveLoading\\A1SysTest\\A1SysTest.exe"
 #define DllName "Dll1.dll"
 #define FuncName "ExportFunction"
 
