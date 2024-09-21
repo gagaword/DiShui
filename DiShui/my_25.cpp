@@ -113,7 +113,7 @@ bool PrintDataExport(LPCSTR filePath)
 	// 通过OPTIONAL获取到导出表
 	//std::cout << "Optional Data_Exports Address------->"  <<  peheader.optionalHeader->DataDirectory[0].VirtualAddress << std::endl;
 	// RVA转FOV
-	DWORD FOV = RvaToFov(VA, fileBuffer);
+	DWORD FOV = RvaToFoa(VA, fileBuffer);
 	if (DEBUG)
 	{
 		std::cout << std::hex << "FOV-----> " << FOV << std::endl;
@@ -130,10 +130,10 @@ bool PrintDataExport(LPCSTR filePath)
 	std::cout << "函数名称地址-------------> " << std::hex << std::uppercase << pExport->AddressOfNames << std::endl;
 	std::cout << "函数名称序号地址---------> " << std::hex << std::uppercase << pExport->AddressOfNameOrdinals << std::endl;
 
-	DWORD AddressNamesFov = RvaToFov(pExport->AddressOfNames, fileBuffer);
-	DWORD NameFOV = RvaToFov(pExport->Name, fileBuffer);
-	DWORD AddressFunction = RvaToFov(pExport->AddressOfFunctions, fileBuffer);
-	DWORD AddressNameOrdinals = RvaToFov(pExport->AddressOfNameOrdinals, fileBuffer);
+	DWORD AddressNamesFov = RvaToFoa(pExport->AddressOfNames, fileBuffer);
+	DWORD NameFOV = RvaToFoa(pExport->Name, fileBuffer);
+	DWORD AddressFunction = RvaToFoa(pExport->AddressOfFunctions, fileBuffer);
+	DWORD AddressNameOrdinals = RvaToFoa(pExport->AddressOfNameOrdinals, fileBuffer);
 
 	std::cout << "名称:文件偏移----------> " << std::hex << std::uppercase<< NameFOV << std::endl;
 	std::cout << "函数名称:文件偏移------> " << std::hex << std::uppercase << AddressNamesFov << std::endl;
@@ -149,10 +149,10 @@ bool PrintDataExport(LPCSTR filePath)
 
 	for (DWORD i = 0; i < pExport->NumberOfNames; i++) {
 		std::cout << "********** Function:" << i << " ******************" << std::endl;
-		DWORD functionNameFov = RvaToFov(pNameArray[i], fileBuffer);
+		DWORD functionNameFov = RvaToFoa(pNameArray[i], fileBuffer);
 		WORD functionOrdinal = pNameOrdinals[i];
 		DWORD functionAddresss = pFunctionAddress[i];
-		DWORD functionFOV = RvaToFov(pFunctionAddress[i], fileBuffer);
+		DWORD functionFOV = RvaToFoa(pFunctionAddress[i], fileBuffer);
 		std::cout << "Function FOV: " << std::hex << std::uppercase <<  functionFOV << std::endl;
 		std::cout << "Function RVA: " << std::hex << std::uppercase << functionAddresss << std::endl;
 		printf("Function Name: %s\nFunction Ordinal: %d\n", (char*)fileBuffer + functionNameFov, functionOrdinal);
@@ -160,7 +160,7 @@ bool PrintDataExport(LPCSTR filePath)
 	return true;
 }
 
-DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer)
+DWORD RvaToFoa(DWORD RVA, LPVOID fileBuffer)
 {
 	if (RVA == NULL || fileBuffer == nullptr)return 0;
 	
@@ -226,16 +226,16 @@ DWORD FunctionSerialToInfo(DWORD serial, LPCSTR filePath)
 
 	// 导出表信息
 	DWORD pExport = peheader.dataHeaders[0].VirtualAddress;
-	DWORD pExportFile = (DWORD)((BYTE*)fileBuffer + RvaToFov(pExport, fileBuffer));
+	DWORD pExportFile = (DWORD)((BYTE*)fileBuffer + RvaToFoa(pExport, fileBuffer));
 	PIMAGE_EXPORT_DIRECTORY pExport_DI = (PIMAGE_EXPORT_DIRECTORY)pExportFile;
 
 	// 序列号
-	WORD* pserialFOV = (WORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfNameOrdinals, fileBuffer));
+	WORD* pserialFOV = (WORD*)((BYTE*)fileBuffer + RvaToFoa(pExport_DI->AddressOfNameOrdinals, fileBuffer));
 
-	DWORD* pAddressFunc = (DWORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfFunctions, fileBuffer));
+	DWORD* pAddressFunc = (DWORD*)((BYTE*)fileBuffer + RvaToFoa(pExport_DI->AddressOfFunctions, fileBuffer));
 
 	// 函数名称
-	DWORD* pFuncNameFOV_1 = (DWORD*)((BYTE*)fileBuffer + RvaToFov(pExport_DI->AddressOfNames, fileBuffer));
+	DWORD* pFuncNameFOV_1 = (DWORD*)((BYTE*)fileBuffer + RvaToFoa(pExport_DI->AddressOfNames, fileBuffer));
 
 	// 函数内存地址
 	DWORD pFuncAddress = 0;
@@ -250,8 +250,8 @@ DWORD FunctionSerialToInfo(DWORD serial, LPCSTR filePath)
 		if (serial_this == serial)
 		{
 			pFuncAddress = pAddressFunc[i];
-			pFuncAddressFile = RvaToFov(pAddressFunc[i], fileBuffer);
-			DWORD name = RvaToFov(pFuncNameFOV_1[i], fileBuffer);
+			pFuncAddressFile = RvaToFoa(pAddressFunc[i], fileBuffer);
+			DWORD name = RvaToFoa(pFuncNameFOV_1[i], fileBuffer);
 			funcName = (char*)(BYTE*)fileBuffer + name;
 		}
 	}
@@ -316,14 +316,14 @@ DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath)
 	}
 
 	DWORD exportAddress = peheader.dataHeaders[0].VirtualAddress;
-	exportAddress = RvaToFov(exportAddress,fileBuffer);
+	exportAddress = RvaToFoa(exportAddress,fileBuffer);
 
 	PIMAGE_EXPORT_DIRECTORY pExport = (PIMAGE_EXPORT_DIRECTORY)(DWORD*)((BYTE*)fileBuffer + exportAddress);
 
-	DWORD addressNamesFOV = RvaToFov(pExport->AddressOfNames, fileBuffer);
+	DWORD addressNamesFOV = RvaToFoa(pExport->AddressOfNames, fileBuffer);
 	DWORD* arrayName = ((DWORD*)((BYTE*)fileBuffer + addressNamesFOV));
 
-	DWORD funcAddress = RvaToFov(pExport->AddressOfFunctions, fileBuffer);
+	DWORD funcAddress = RvaToFoa(pExport->AddressOfFunctions, fileBuffer);
 	DWORD* funcAddressFileFov = (DWORD*)((BYTE*)fileBuffer + funcAddress);
 
 	// 函数文件偏移
@@ -331,7 +331,7 @@ DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath)
 	// 函数内存地址
 	DWORD funcMemeryAddress = 0;
 
-	DWORD funcFileAddressSerial = (DWORD)RvaToFov(pExport->AddressOfNameOrdinals, fileBuffer);
+	DWORD funcFileAddressSerial = (DWORD)RvaToFoa(pExport->AddressOfNameOrdinals, fileBuffer);
 	WORD* funcFileSerial = (WORD*)((BYTE*)fileBuffer + funcFileAddressSerial);
 
 	// 函数序列号
@@ -339,13 +339,13 @@ DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath)
 
 	for (size_t i = 0; i < pExport->NumberOfFunctions; i++)
 	{
-		DWORD NamesAddress =  RvaToFov(arrayName[i], fileBuffer);
+		DWORD NamesAddress =  RvaToFoa(arrayName[i], fileBuffer);
 		char* _func_name = (char*)((BYTE*)fileBuffer + NamesAddress);
 		if (!strcmp(_func_name, funName))
 		{
 			std::cout << _func_name << std::endl;
 			funcMemeryAddress = funcAddressFileFov[i];
-			funcFileFov = RvaToFov(funcAddressFileFov[i],fileBuffer);
+			funcFileFov = RvaToFoa(funcAddressFileFov[i],fileBuffer);
 			funcSerial = funcFileSerial[i];
 			break;
 		}

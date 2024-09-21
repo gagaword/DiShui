@@ -10,6 +10,7 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 #include <Windows.h>
+#include<string.h>
 #include <iostream>
 
 #endif //PCH_H

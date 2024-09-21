@@ -54,7 +54,7 @@ DWORD FunctionNameToInfo(LPCSTR funName, LPCSTR filePath);
  * @param fileBuffer 具有PE文件特征的数据流
  * @return 0表示失败，否则返FOV
 */
-DWORD RvaToFov(DWORD RVA, LPVOID fileBuffer);
+DWORD RvaToFoa(DWORD RVA, LPVOID fileBuffer);
 
 /**
  * @brief 该方法把FOA转为RVA

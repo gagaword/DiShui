@@ -17,12 +17,12 @@ int __stdcall imul(int x, int y)
 
 void inti()
 {
-    MessageBoxA(NULL, "Hello,World", "TIP", MB_OK);
+    MessageBoxA(NULL, "DLL注入成功", "TIP", MB_OK);
 }
 
 void del()
 {
-    MessageBoxA(NULL,"Bay","TIP", MB_OK);
+    MessageBoxA(NULL,"DLL已卸载","TIP", MB_OK);
 }
 
 void ExportFunction()

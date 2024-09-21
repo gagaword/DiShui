@@ -2,7 +2,7 @@
 #include"day28.h"
 #include<Windows.h>
 
-#define filePath "D:\\DriveLoading\\A1SysTest\\A1SysTest.exe"
+#define filePath "C:\\Windows\\system32\\notepad.exe"
 #define DllName "Dll1.dll"
 #define FuncName "ExportFunction"
 

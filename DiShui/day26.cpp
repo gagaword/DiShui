@@ -30,7 +30,7 @@ bool PrintBaseloc(LPCSTR filePath)
 
 	// 重定位表
 	PIMAGE_BASE_RELOCATION pBASE_RELOCATION = (PIMAGE_BASE_RELOCATION)&peheader.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
-	PIMAGE_BASE_RELOCATION PBASE = (PIMAGE_BASE_RELOCATION)((BYTE*)fileBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, fileBuffer));
+	PIMAGE_BASE_RELOCATION PBASE = (PIMAGE_BASE_RELOCATION)((BYTE*)fileBuffer + RvaToFoa(pBASE_RELOCATION->VirtualAddress, fileBuffer));
 	// 数据
 	while (PBASE->VirtualAddress != 0)
 	{
@@ -46,7 +46,7 @@ bool PrintBaseloc(LPCSTR filePath)
 				break;
 			}
 			cout << "RVA: " << hex << uppercase << (PBASE->VirtualAddress + ((*BaseAddress1) & 0xFFF)) << "  ";
-			cout << "Offset " << hex << uppercase << RvaToFov((PBASE->VirtualAddress + ((*BaseAddress1) & 0xFFF)), fileBuffer) << "  ";
+			cout << "Offset " << hex << uppercase << RvaToFoa((PBASE->VirtualAddress + ((*BaseAddress1) & 0xFFF)), fileBuffer) << "  ";
 			cout << "Type " << hex << uppercase << ((*BaseAddress1 & 0xF000) >> 12) << endl;
 			BaseAddress1++;
 		}
@@ -130,7 +130,7 @@ bool MoveExport(LPCSTR filePath)
 
 	
 	// 导出表信息
-	DWORD exportAddressFOA = RvaToFov(newPehear.dataHeaders[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress, newBuffer);
+	DWORD exportAddressFOA = RvaToFoa(newPehear.dataHeaders[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress, newBuffer);
 	PIMAGE_EXPORT_DIRECTORY pEXPORT = (PIMAGE_EXPORT_DIRECTORY)(newBuffer + exportAddressFOA);
 	cout << "导出表位置：" <<  hex << exportAddressFOA << endl;
 
@@ -139,21 +139,21 @@ bool MoveExport(LPCSTR filePath)
 	cout << "节表起始位置FOA: " << hex << readfileResu << endl;
 
 	// 复制 AddressOfFunctions 到新节
-	memcpy(SectionAddress, newBuffer + RvaToFov(pEXPORT->AddressOfFunctions, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
+	memcpy(SectionAddress, newBuffer + RvaToFoa(pEXPORT->AddressOfFunctions, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
 
 	// 复制 AddressOfNameOrdinals 到新节
 	WORD* Ordinals = (WORD*)((BYTE*)SectionAddress + pEXPORT->NumberOfFunctions * sizeof(DWORD));
-	memcpy(Ordinals, newBuffer + RvaToFov(pEXPORT->AddressOfNameOrdinals, newBuffer), pEXPORT->NumberOfFunctions * sizeof(WORD));
+	memcpy(Ordinals, newBuffer + RvaToFoa(pEXPORT->AddressOfNameOrdinals, newBuffer), pEXPORT->NumberOfFunctions * sizeof(WORD));
 
 	// 复制 AddressOfNames 到新节
 	DWORD* NamesAddress = (DWORD*)((BYTE*)Ordinals + pEXPORT->NumberOfFunctions * sizeof(WORD));	
-	memcpy(NamesAddress, newBuffer + RvaToFov(pEXPORT->AddressOfNames, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
+	memcpy(NamesAddress, newBuffer + RvaToFoa(pEXPORT->AddressOfNames, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
 
 	// 复制名字到新节
 	BYTE* nameData = (BYTE*)((BYTE*)NamesAddress + pEXPORT->NumberOfFunctions * sizeof(DWORD));
 	for (size_t i = 0; i < pEXPORT->NumberOfFunctions; i++)
 	{
-		const char* functionName = (const char*)((BYTE*)newBuffer + RvaToFov(NamesAddress[i], newBuffer));
+		const char* functionName = (const char*)((BYTE*)newBuffer + RvaToFoa(NamesAddress[i], newBuffer));
 		size_t nameLength = strlen(functionName) + 1;
 		memcpy(nameData, functionName, nameLength);
 		// 直接更新NamesAddress地址
@@ -163,7 +163,7 @@ bool MoveExport(LPCSTR filePath)
 
 	// 复制模块名称到新节中
 	DWORD* Module = (DWORD*)(nameData + pEXPORT->NumberOfFunctions);
-	memcpy(Module, newBuffer + RvaToFov(pEXPORT->Name, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
+	memcpy(Module, newBuffer + RvaToFoa(pEXPORT->Name, newBuffer), pEXPORT->NumberOfFunctions * sizeof(DWORD));
 
 	// 复制导出表到新节
 	PIMAGE_EXPORT_DIRECTORY NewExportAddress = (PIMAGE_EXPORT_DIRECTORY)(DWORD*)((BYTE*)nameData + pEXPORT->NumberOfFunctions * sizeof(DWORD));
@@ -264,8 +264,8 @@ bool MoveBaseReloc(LPCSTR filePath)
 	// 重定位表位置
 	PIMAGE_BASE_RELOCATION pBASE_RELOCATION = (PIMAGE_BASE_RELOCATION)&newPehear.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
 	// 数据位置
-	PIMAGE_BASE_RELOCATION pBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, newBuffer));
-	DWORD* dataAddress = (DWORD*)((BYTE*)newBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, newBuffer));
+	PIMAGE_BASE_RELOCATION pBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFoa(pBASE_RELOCATION->VirtualAddress, newBuffer));
+	DWORD* dataAddress = (DWORD*)((BYTE*)newBuffer + RvaToFoa(pBASE_RELOCATION->VirtualAddress, newBuffer));
 	// 数量
 	DWORD DataNumer = 0;
 
@@ -288,7 +288,7 @@ bool MoveBaseReloc(LPCSTR filePath)
 
 	// 修改基地址，修正重定位表
 	newPehear.optionalHeader->ImageBase += 0x1000;
-	PIMAGE_BASE_RELOCATION pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFov(pBASE_RELOCATION->VirtualAddress, newBuffer));
+	PIMAGE_BASE_RELOCATION pNewBASE_DATA = (PIMAGE_BASE_RELOCATION)((BYTE*)newBuffer + RvaToFoa(pBASE_RELOCATION->VirtualAddress, newBuffer));
 
 	while (pNewBASE_DATA->VirtualAddress != 0)
 	{
@@ -312,7 +312,7 @@ bool MoveBaseReloc(LPCSTR filePath)
 			DWORD rvaToPatch = pNewBASE_DATA->VirtualAddress + offset;
 
 			// 将RVA转换为文件偏移（FOA）
-			DWORD fileOffsetToPatch = RvaToFov(rvaToPatch, newBuffer);
+			DWORD fileOffsetToPatch = RvaToFoa(rvaToPatch, newBuffer);
 
 			// 获取要修正的内存位置
 			DWORD* patchLocation = (DWORD*)((BYTE*)newBuffer + fileOffsetToPatch);
