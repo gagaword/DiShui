@@ -16,6 +16,9 @@
     <Filter Include="源文件\PE">
       <UniqueIdentifier>{f20da30f-0997-4e13-be31-c18be1b76267}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\CPP">
+      <UniqueIdentifier>{83235220-c1b8-48b3-84bc-d43c97e3cbeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="My_day23.cpp">
@@ -36,11 +39,14 @@
     <ClCompile Include="day27.cpp">
       <Filter>源文件\PE</Filter>
     </ClCompile>
-    <ClCompile Include="my_day28.cpp">
-      <Filter>源文件\PE</Filter>
-    </ClCompile>
     <ClCompile Include="day28.cpp">
       <Filter>源文件\PE</Filter>
+    </ClCompile>
+    <ClCompile Include="my_day30.cpp">
+      <Filter>源文件\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="my_day31.cpp">
+      <Filter>源文件\CPP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="day28.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="day30.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

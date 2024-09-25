@@ -2,7 +2,7 @@
 #include"day28.h"
 #include<Windows.h>
 
-#define filePath "C:\\Windows\\system32\\notepad.exe"
+#define filePath "C:\\Users\\GaGa\\Desktop\\jinshan2007_CrackMe\\CrackMe.exe"
 #define DllName "Dll1.dll"
 #define FuncName "ExportFunction"
 
@@ -11,11 +11,11 @@
 
 // 声明函数指针
 typedef void (*LPTest)();
+
 int main()
 {
 	MovImportAndInjectionDll(filePath, DllName, FuncName);
 
-	
 	//ExportFunction();
 	//LPTest function;
 	//// 加载dll

@@ -30,13 +30,14 @@ bool MovImportAndInjectionDll(LPCSTR filePath, LPCSTR InjectionDll, LPCSTR funct
 	// PE信息
 	PEHeaders peheaders;
 	if (!GetPeheadersInfo(fileBuffer, peheaders)) return false;
-	
+
+
 	// 导入表大小
 	DWORD importSize = peheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size;
 
 	// 追加0x200字节
 	DWORD addByte = importSize + 0x100;
-	BYTE* NewFileBuffer = (BYTE*)realloc(fileBuffer, ReadFileSize + addByte);
+	BYTE* NewFileBuffer = (BYTE*)realloc(fileBuffer, static_cast<size_t>(ReadFileSize) + static_cast<size_t>(addByte));
 	memset(ReadFileSize + NewFileBuffer, 0, addByte);
 
 	// 更新PE信息
@@ -48,6 +49,7 @@ bool MovImportAndInjectionDll(LPCSTR filePath, LPCSTR InjectionDll, LPCSTR funct
 
 	// 导入表信息
 	PIMAGE_IMPORT_DESCRIPTOR importAddress = (PIMAGE_IMPORT_DESCRIPTOR)(DWORD*)((BYTE*)NewFileBuffer + RvaToFoa(newPeheaders.optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress, NewFileBuffer));
+
 
 	// 获取程序对齐信息
 	DWORD SectionAlign = newPeheaders.optionalHeader->SectionAlignment;

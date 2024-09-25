@@ -25,7 +25,8 @@
     <ClCompile Include="day28.cpp" />
     <ClCompile Include="my_25.cpp" />
     <ClCompile Include="My_day23.cpp" />
-    <ClCompile Include="my_day28.cpp" />
+    <ClCompile Include="my_day30.cpp" />
+    <ClCompile Include="my_day31.cpp" />
     <ClCompile Include="my_head.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="day26.h" />
     <ClInclude Include="day27.h" />
     <ClInclude Include="day28.h" />
+    <ClInclude Include="day30.h" />
     <ClInclude Include="Lib\framework.h" />
     <ClInclude Include="my_25.h" />
     <ClInclude Include="My_day23.h" />
