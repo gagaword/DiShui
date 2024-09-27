@@ -140,10 +140,30 @@ void Test_Sub()
 	// 尝试修改虚函数地址调用其他函数
 	// 获取目标函数地址
 	DWORD FuncAddress = (DWORD)&Hello;
-	cout << hex << uppercase << FuncAddress << endl;
-	fPn = (FuncTion)FuncAddress;
+	
+	// 第一个虚函数地址
+	// 获取虚函数表指针
+	void** vtable = *(void***)pSub;
+	cout << hex << uppercase << vtable[0] << endl;
+
+	// 使用void更好
+	//int** address = (int**)*(int*)&sub;
+
+	// 修改内存保护属性
+	DWORD oldProtect;
+	VirtualProtect(vtable, sizeof(void*), PAGE_EXECUTE_READWRITE, &oldProtect);
+
+	// 修改值
+	vtable[0] = (void*)&Hello;
+
+	// 恢复内存保护属性
+	VirtualProtect(vtable, sizeof(void*), oldProtect, &oldProtect);
+	// 调用函数
+	fPn = (FuncTion)vtable[0];
 	fPn();
 
+	
+	cout << "********************************" << endl;
 
 	for (int i = 0; i < 6; i++)
 	{
