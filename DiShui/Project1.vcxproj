@@ -23,9 +23,10 @@
     <ClCompile Include="day26.cpp" />
     <ClCompile Include="day27.cpp" />
     <ClCompile Include="day28.cpp" />
+    <ClCompile Include="day35.h" />
     <ClCompile Include="my_25.cpp" />
     <ClCompile Include="My_day23.cpp" />
-    <ClCompile Include="my_day34.cpp" />
+    <ClCompile Include="my_day35.cpp" />
     <ClCompile Include="my_head.cpp" />
   </ItemGroup>
   <ItemGroup>
