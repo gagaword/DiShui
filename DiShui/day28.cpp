@@ -14,13 +14,11 @@ unsigned int align_up(unsigned int value, unsigned int alignment) {
 	return (value + alignment - 1) & ~(alignment - 1);
 
 }
-
 bool MovImportAndInjectionDll(LPCSTR filePath, LPCSTR InjectionDll, LPCSTR functionName)
 {
 	
 	if (!filePath || !InjectionDll || !functionName)return false;
 	
-
 	// ¶ÁÈ¡Êý¾Ý
 	LPVOID fileBuffer = nullptr;
 	DWORD ReadFileSize = ReadFile(filePath, &fileBuffer);

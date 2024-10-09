@@ -46,12 +46,12 @@ private:
 template<class T_ELE>
 Vector<T_ELE>::Vector() :m_dwInitSize(100), m_dwIncrement(5) 
 {
-
 	m_pVector = new T_ELE[m_dwInitSize];
 	memset(m_pVector, 0, m_dwInitSize * sizeof(T_ELE));
 	m_dwLen = m_dwInitSize;
 	m_dwInitSize = m_dwInitSize * sizeof(T_ELE);
-	m_dwIndex = 0;}
+	m_dwIndex = 0;
+}
 
 // 有参构造函数
 template<class T_ELE>
@@ -94,7 +94,7 @@ DWORD Vector<T_ELE>::at(DWORD dwIndex, OUT T_ELE* pEle)
 	if (dwIndex > m_dwIndex)
 	{
 		cout << "索引值错误，元素不存在！！！" << endl;
-		return ERROR_MY;
+		return INDEX_ERROR;
 	}
 	*pEle = *(&m_pVector[dwIndex]);
 }
@@ -108,7 +108,7 @@ DWORD Vector<T_ELE>::push_back(T_ELE Element)
 	}
 	memcpy(&m_pVector[m_dwIndex], &Element, sizeof(Element));
 	m_dwIndex++;
-	return 0;
+	return SUCCESS;
 }
 
 template<class T_ELE>
@@ -121,11 +121,16 @@ VOID Vector<T_ELE>::pop_back()
 template<class T_ELE>
 DWORD Vector<T_ELE>::insert(DWORD dwIndex, T_ELE Element)
 {
-	if (dwIndex < m_dwIndex)
+	if (dwIndex < 0)
 	{
-		cout << "该位置已有数据" << endl;
-		return ERROR_MY;
+		return INDEX_ERROR;
 	}
+	if (dwIndex >= m_dwLen)
+	{
+		expand();
+	}
+
+	memcpy(&m_pVector[dwIndex + 1], &m_pVector[dwIndex], (int)(m_dwIndex - dwIndex) * sizeof(int));
 	memcpy(&m_pVector[dwIndex], &Element, sizeof(Element));
 
 	return SUCCESS;
@@ -172,6 +177,7 @@ VOID Vector<T_ELE>::erase(DWORD dwIndex)
 	if (dwIndex >= m_dwIndex)
 	{
 		throw std::runtime_error("索引错误，元素不存在");
+		return INDEX_ERROR;
 	
 	}
 	memcpy(&m_pVector[dwIndex], &m_pVector[dwIndex + 1], m_dwInitSize - sizeof(T_ELE));

@@ -40,7 +40,7 @@ void VectorTest()
 	cout << result << endl;
 
 	
-	v->insert(5, 2);
+	v->insert(2, 9);
 
 	cout << "还可以存储:" << v->capacity() << "个元素" << endl;
 
