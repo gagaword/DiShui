@@ -99,15 +99,15 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::GetElement(IN DWORD dwIndex, OUT 
 	{
 		if (index == dwIndex)
 		{
-			break;
+			Element = pnode->Data;
+			return SUCCESS;
 		}
 		// 移动至下一个节点
 		pnode = pnode->pNext;
 		index++;
 	}
 
-	// 3. 将索引指向节点的值复制到OUT参数								
-	Element = pnode->Data;
+	return ERROR_MY;
 }
 
 //根据元素内容获取索引									
@@ -116,13 +116,13 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::GetElementIndex(IN T_ELE& Element
 	// 1. 判断链表是否为空
 	if (IsEmpty())
 	{
-		return SUCCESS;
+		return BUFFER_IS_EMPTY;
 	}
 
 	// 2. 循环遍历链表，找到与Element相同的元素		
 	PNODE pnode = m_pList;
 	int index = 0;
-	while (pnode->pNext != NULL)
+	while (pnode)
 	{
 		if (pnode->Data == Element)
 		{
@@ -186,12 +186,13 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::Insert(IN DWORD dwIndex, IN T_ELE
 		return INDEX_IS_ERROR;
 	}
 
+	PNODE new_pnode = new NODE();
+	new_pnode->Data = Element;
+
 	//  3. 如果索引为0	
 	PNODE pnode = m_pList;
 	if (dwIndex == 0)
 	{
-		PNODE new_pnode = new NODE();
-		new_pnode->Data = Element;
 		new_pnode->pNext = pnode;
 		m_pList = new_pnode;
 		m_dwLength++;
@@ -201,13 +202,10 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::Insert(IN DWORD dwIndex, IN T_ELE
 	//  4. 如果索引为链表尾	
 	if (dwIndex == m_dwLength)
 	{
-		PNODE new_pnode = new NODE();
-
+		
 		// 找到链表尾
 		while (pnode->pNext != NULL)
 		{
-			PNODE new_pnode = new NODE();
-			new_pnode->Data = Element;
 			new_pnode->pNext = pnode;
 			pnode->pNext = NULL;
 			m_dwLength++;
@@ -218,10 +216,8 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::Insert(IN DWORD dwIndex, IN T_ELE
 	//  5. 如果索引为链表中		
 	if (dwIndex > 0 && dwIndex < m_dwLength)
 	{
-		PNODE new_pnode = new NODE();
 		PNODE index_Previous_pnode = GetIndexPreviousNode(dwIndex);
 		PNODE index_Current_pnode = GetIndexCurrentNode(dwIndex);
-		new_pnode->Data = Element;
 		index_Previous_pnode->pNext = new_pnode;
 		new_pnode->pNext = index_Current_pnode;
 		m_dwLength++;
@@ -232,7 +228,6 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::Insert(IN DWORD dwIndex, IN T_ELE
 //根据索引删除节点									
 template<class T_ELE> DWORD LinkedList<T_ELE>::Delete(IN DWORD dwIndex)
 {
-
 	//  1. 判断链表是否为空		
 	if (IsEmpty())
 	{
@@ -282,7 +277,7 @@ typename LinkedList<T_ELE>::PNODE LinkedList<T_ELE>::GetIndexPreviousNode(DWORD 
 {
 	if (dwIndex > m_dwLength)
 	{
-		return 0;
+		return nullptr;
 	}
 	PNODE pnode = m_pList;
 	int index = 0;
@@ -296,7 +291,7 @@ typename LinkedList<T_ELE>::PNODE LinkedList<T_ELE>::GetIndexPreviousNode(DWORD 
 		index++;
 		pnode = pnode->pNext;
 	}
-	return 0;
+	return nullptr;
 }
 
 //获取dwIndex节点的地址									
