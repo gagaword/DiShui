@@ -19,6 +19,9 @@
     <Filter Include="源文件\CPP">
       <UniqueIdentifier>{83235220-c1b8-48b3-84bc-d43c97e3cbeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\WIN32">
+      <UniqueIdentifier>{906fb3e4-e3b5-4e3f-9019-0f2999f1a0d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="My_day23.cpp">
@@ -45,11 +48,8 @@
     <ClCompile Include="day35.h">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="my_day37.cpp">
-      <Filter>源文件\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="my_day38.cpp">
-      <Filter>源文件\CPP</Filter>
+    <ClCompile Include="my_day39.cpp">
+      <Filter>源文件\WIN32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
