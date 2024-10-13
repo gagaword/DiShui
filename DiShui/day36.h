@@ -79,7 +79,7 @@ template<class T_ELE> void LinkedList<T_ELE>::Clear()
 	}
 	// 3. 删除最后一个节点并将链表长度置为0	
 	delete pnode;
-	memset(&m_pList, 0, sizeof(T_ELE));
+	m_pList = NULL;
 	m_dwLength = 0;
 }
 
@@ -133,6 +133,7 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::GetElementIndex(IN T_ELE& Element
 	}
 	return ERROR_MY;
 }
+
 
 //在链表尾部新增节点									
 template<class T_ELE> DWORD LinkedList<T_ELE>::Insert(IN T_ELE Element)
@@ -240,7 +241,14 @@ template<class T_ELE> DWORD LinkedList<T_ELE>::Delete(IN DWORD dwIndex)
 		return -1;
 	}
 
-	//  3. 如果链表中只有头节点，且要删除头节点			
+	//  3. 如果链表中只有头节点，且要删除头节点		
+	if (dwIndex = 0 && m_dwLength == 1)
+	{
+		delete m_pList;
+		m_pList = NULL;
+		m_dwLength--;
+		return SUCCESS;
+	}
 
 
 	//  4. 如果要删除头节点		
