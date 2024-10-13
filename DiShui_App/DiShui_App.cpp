@@ -23,6 +23,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
     OutputDebugString(L"AAAAxixixixixi");
+    MessageBox((HWND)1, 0, 0, 0);
+    
+    //DWORD error_error = GetLastError();
 
     //UNREFERENCED_PARAMETER(hPrevInstance);
     //UNREFERENCED_PARAMETER(lpCmdLine);
