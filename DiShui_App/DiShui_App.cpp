@@ -7,14 +7,18 @@
 #define MAX_LOADSTRING 100
 
 // 全局变量:
-HINSTANCE hInst;                                // 当前实例
+HINSTANCE hInst;                                // 当前实例，当前窗口句柄
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
 
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
+
+// 消息处理函数
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+
+// 关于处理函数
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -22,43 +26,54 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-    OutputDebugString(L"AAAAxixixixixi");
-    MessageBox((HWND)1, 0, 0, 0);
+    OutputDebugString(TEXT("AAAAxixixixixi\n"));
+
+    OutputDebugStringF("%s\n","中国");
+
+	MessageBox((HWND)nullptr, TEXT("HelloWorld"), TEXT("TIP"), MB_OK);
+
+	DWORD errorCode = GetLastError();
+
     
     //DWORD error_error = GetLastError();
 
-    //UNREFERENCED_PARAMETER(hPrevInstance);
-    //UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
     //// TODO: 在此处放置代码。
 
 
-    //// 初始化全局字符串
-    //LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    //LoadStringW(hInstance, IDC_DISHUIAPP, szWindowClass, MAX_LOADSTRING);
-    //MyRegisterClass(hInstance);
+    // 初始化全局字符串
+    // 标题名
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
-    //// 执行应用程序初始化:
-    //if (!InitInstance (hInstance, nCmdShow))
-    //{
-    //    return FALSE;
-    //}
+    // 类名
+    LoadStringW(hInstance, IDC_DISHUIAPP, szWindowClass, MAX_LOADSTRING);
 
-    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DISHUIAPP));
+    // 调用注册窗口函数
+    MyRegisterClass(hInstance);
 
-    //MSG msg;
+    // 执行应用程序初始化:
+    if (!InitInstance (hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
 
-    //// 主消息循环:
-    //while (GetMessage(&msg, nullptr, 0, 0))
-    //{
-    //    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-    //    {
-    //        TranslateMessage(&msg);
-    //        DispatchMessage(&msg);
-    //    }
-    //}
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DISHUIAPP));
 
-    //return (int) msg.wParam;
+    MSG msg;
+
+    // 主消息循环:
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    return (int) msg.wParam;
 }
 
 
@@ -70,6 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
+    // 窗口类，窗口的一些基本信息
     WNDCLASSEXW wcex;
 
     wcex.cbSize = sizeof(WNDCLASSEX);
@@ -104,7 +120,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 将实例句柄存储在全局变量中
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      400, 400, 550, 550, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
