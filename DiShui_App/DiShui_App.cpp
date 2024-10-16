@@ -11,13 +11,15 @@ HINSTANCE hInst;                                // 当前实例，当前窗口�
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
 WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
 
+//主窗口句柄
+HWND GloBal_hWnd;
+
 // 此代码模块中包含的函数的前向声明:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 
 // 消息处理函数
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-
 // 关于处理函数
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -26,30 +28,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-    OutputDebugString(TEXT("AAAAxixixixixi\n"));
-
-    OutputDebugStringF("%s\n","中国");
-
-	MessageBox((HWND)nullptr, TEXT("HelloWorld"), TEXT("TIP"), MB_OK);
-
-	DWORD errorCode = GetLastError();
-
-    
-    //DWORD error_error = GetLastError();
-
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    //// TODO: 在此处放置代码。
-
-
+   
     // 初始化全局字符串
     // 标题名
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-
+    wcscpy_s(szTitle, sizeof(szTitle) / sizeof(wchar_t),L"HelloWorld");
     // 类名
-    LoadStringW(hInstance, IDC_DISHUIAPP, szWindowClass, MAX_LOADSTRING);
-
+    wcscpy_s(szWindowClass, sizeof(szWindowClass) / sizeof(wchar_t), L"My_Class_Name");
+   
     // 调用注册窗口函数
     MyRegisterClass(hInstance);
 
@@ -59,24 +47,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
+	// 创建按钮函数   
+	CreateWindow(TEXT("BUTTON"), TEXT("打开"), WS_VISIBLE | WS_CHILD, 50, 50, 80, 25, GloBal_hWnd, (HMENU)1, hInst, nullptr);
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DISHUIAPP));
 
     MSG msg;
-
     // 主消息循环:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            TranslateMessage(&msg); //  翻译消息
+            DispatchMessage(&msg);  //  分发消息
         }
     }
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  函数: MyRegisterClass()
@@ -126,11 +114,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+   GloBal_hWnd = hWnd;
 
    return TRUE;
+}
+
+// 绘图逻辑，由WM_PAINT调用;
+void DrawContent(HDC hdc, RECT* rect) {
+	// 处理所有绘图逻辑
+	FillRect(hdc, rect, (HBRUSH)(COLOR_WINDOW + 1));
+	TextOut(hdc, 50, 50, TEXT("Hello, Windows!"), 15);
 }
 
 //
@@ -150,15 +145,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
+            OutputDebugStringF("wmId-----> %d \n", wmId);
             // 分析菜单选择:
             switch (wmId)
             {
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
+                return 0;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
+
                 break;
+                return 0;
+            // 如果都没有则调用DefWindowProc让系统处理.
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
@@ -168,12 +168,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+
             // TODO: 在此处添加使用 hdc 的任何绘图代码...
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+
+            // 调用绘制函数
+            DrawContent(hdc, &rect);
+
             EndPaint(hWnd, &ps);
         }
+        return 0;
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+		OutputDebugStringF("wmId-----> %d \n", message);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
@@ -187,12 +196,15 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     UNREFERENCED_PARAMETER(lParam);
     switch (message)
     {
+	OutputDebugStringF("About_message------> %d\n", message);
+
     case WM_INITDIALOG:
         return (INT_PTR)TRUE;
 
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
         {
+            OutputDebugStringF("LOWORD(wParam)----->%d\n", LOWORD(wParam));
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
         }
