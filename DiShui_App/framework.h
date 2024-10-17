@@ -14,3 +14,5 @@
 #include <memory.h>
 #include <tchar.h>
 #include <stdio.h>
+//#include <afxwin.h>
+
