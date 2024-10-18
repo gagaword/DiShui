@@ -24,6 +24,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
+BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 void CreatBuuton(HWND hwnd)
 {
 	HWND buuton = CreateWindowW(
@@ -36,6 +38,14 @@ void CreatBuuton(HWND hwnd)
         hInst,
 		nullptr
 	);
+
+    TCHAR szBuffer[0x20];
+
+    GetClassName(buuton, szBuffer, 0x20);
+    WNDCLASS ws;
+    GetClassInfo(hInst, szBuffer, &ws);
+    OutputDebugString(ws.lpszClassName);
+
 	HWND hwndCheckBox = CreateWindow(
 		TEXT("button"),
 		TEXT("复选框"),
@@ -77,21 +87,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wcscpy_s(szTitle, sizeof(szTitle) / sizeof(wchar_t),L"HelloWorld");
     // 类名
     wcscpy_s(szWindowClass, sizeof(szWindowClass) / sizeof(wchar_t), L"My_Class_Name");
+
+    DialogBox(hInstance,MAKEINTRESOURCE(IDD_DIALOG_MAIN),nullptr, DialogProc);
    
     // 调用注册窗口函数
-    MyRegisterClass(hInstance);
+    //MyRegisterClass(hInstance);
 
     // 执行应用程序初始化:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+   /* if (!InitInstance (hInstance, nCmdShow))
+	{
+		return FALSE;
+	}*/
 
    
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DISHUIAPP));
 
     MSG msg;
-    // 主消息循环:
+   // 主消息循环:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -105,11 +117,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-//
-//  函数: MyRegisterClass()
-//
-//  目标: 注册窗口类。
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     // 窗口类，窗口的一些基本信息
@@ -143,6 +150,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+
    GloBal_hWnd = hWnd;
    CreatBuuton(hWnd);
 
@@ -152,6 +160,59 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case  WM_INITDIALOG:
+	{
+		MessageBox(hWnd, L"对话框即将被创建", L"TIP", MB_OK);
+
+		return TRUE;
+	}
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case ID_DIALOG_OK:
+		{
+			HWND Edit_UserName = GetDlgItem(hWnd, IDC_EDIT_UserName);
+			HWND Edit_PassWord = GetDlgItem(hWnd, IDC_EDIT_PassWord);
+
+			TCHAR sUserNameBuffer[0x50];
+            TCHAR sUserPassWord[0x50];
+            TCHAR sCombinedBuffer[0xA0];  // 用于存储拼接后的字符串
+            GetWindowText(Edit_UserName, sUserNameBuffer, 0x50);
+			GetWindowText(Edit_PassWord, sUserPassWord, 0x50);
+            swprintf_s(sCombinedBuffer, sizeof(sCombinedBuffer) / sizeof(TCHAR), L"Username: %s\nPassword: %s", sUserNameBuffer, sUserPassWord);
+            MessageBox(hWnd, sCombinedBuffer, L"TIP", MB_OK);
+			
+
+            return TRUE;
+        }
+        case ID_DIALOG_QUIT:
+        {
+			MessageBox(hWnd, L"程序即将退出", L"TIP", MB_OK);
+            EndDialog(hWnd, 0);
+            PostQuitMessage(1);
+            return TRUE;
+        }
+        default:
+            break;
+        }
+		break;
+	}
+	case WM_CLOSE:
+	{
+		EndDialog(hWnd, IDCANCEL);
+		return TRUE;
+	}
+	default:
+		break;
+	}
+
+    return FALSE;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -339,6 +400,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     return 0;
 }
+
 
 // “关于”框的消息处理程序。
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
